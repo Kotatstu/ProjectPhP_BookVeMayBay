@@ -1,0 +1,10 @@
+kết nối database bằng lệnh:
+artisan migrate
+
+Nếu chưa có php trong path, có thể thử
+Ổ đĩa\laragon\bin\php\php-8.3.16-Win32-vs16-x64\php.exe artisan migrate
+ví dụ:
+C:\laragon\bin\php\php-8.3.16-Win32-vs16-x64\php.exe artisan migrate
+
+Nếu đã có path có thể thử:
+php artisan migrate
