@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use App\Models\adminRole;
+
 
 class AdminController extends BaseController
 {
@@ -20,11 +22,12 @@ class AdminController extends BaseController
     {
         $user = Auth::user();
 
-        // 3 tài khoản đầu tiên (ID 1, 2, 3) là admin
-        if ($user->id > 3) {
+        // Kiểm tra xem user có trong bảng adminRole không
+        $isAdmin = adminRole::where('U_ID', $user->id)->exists();
+        if (!$isAdmin) {
             return redirect('/home')->with('error', 'Bạn không có quyền truy cập trang admin.');
         }
-
+        
         // Lấy danh sách toàn bộ người dùng
         $users = DB::table('users')->get();
 

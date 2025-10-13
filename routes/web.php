@@ -4,9 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 
-// Route về trang welcome (Laravel mặc định)
+// Route về trang home
 Route::get('/', function () {
-    return view('welcome'); 
+    return view('home'); 
 });
 
 // Route test Hello
@@ -37,7 +37,7 @@ Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
-// Xử lý form Đăng nhập
+// Đăng nhập
 Route::post('/login', [UserController::class, 'login']);
 
 // Đăng xuất

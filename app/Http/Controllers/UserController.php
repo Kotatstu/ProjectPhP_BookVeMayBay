@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Models\adminRole;
+
 class UserController extends Controller
 {
     public function listView()
@@ -14,6 +16,8 @@ class UserController extends Controller
         return view('users.index', compact('users'));
         #view/users/index.blade.php
     }
+
+    // Hàm đăng ký
     public function register(Request $request)
     {
         // Kiểm tra dữ liệu nhập
@@ -32,9 +36,9 @@ class UserController extends Controller
             return back()->withErrors(['email' => 'Email này đã tồn tại.'])->withInput();
         }
 
-        if (User::where('password', $request->password)->exists()) {
-            return back()->withErrors(['password' => 'Mật khẩu này đã được sử dụng, hãy chọn mật khẩu khác.'])->withInput();
-        }
+        // if (User::where('password', $request->password)->exists()) {
+        //     return back()->withErrors(['password' => 'Mật khẩu này đã được sử dụng, hãy chọn mật khẩu khác.'])->withInput();
+        // }
 
         // Tạo user mới (KHÔNG mã hoá password)
         $user = new User();
@@ -58,9 +62,18 @@ class UserController extends Controller
         // Tìm user theo email
         $user = User::where('email', $request->email)->first();
 
-        // So sánh trực tiếp mật khẩu (vì không mã hoá)
+        // So sánh trực tiếp mật khẩu
         if ($user && $user->password === $request->password) {
             Auth::login($user); // Đăng nhập thành công
+
+            // Kiểm tra xem user có trong bảng adminRole không
+            $isAdmin = adminRole::where('U_ID', $user->id)->exists();
+
+            if ($isAdmin) {
+                // Lấy danh sách user để truyền qua view admin
+                $users = User::all();
+                return view('admin.index', compact('users'));
+            }
             return redirect('/home');
         }
 
