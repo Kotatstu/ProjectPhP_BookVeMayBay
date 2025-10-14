@@ -19,9 +19,6 @@ Route::get('/index', function () {
     return view('index');
 });
 
-// Route gọi controller UserController
-Route::get('/users-view', [UserController::class, 'listView']);
-
 // ================= AUTH =================
 
 // Hiển thị form Đăng ký
@@ -50,3 +47,4 @@ Route::get('/home', function () {
 
 // Trang admin chỉ cho phép admin truy cập
 Route::get('/admin', [AdminController::class, 'index'])->middleware('auth')->name('admin');
+Route::get('/adminUsers', [AdminController::class, 'usersList'])->name('admin.users');

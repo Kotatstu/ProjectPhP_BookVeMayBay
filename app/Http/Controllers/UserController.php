@@ -9,14 +9,6 @@ use App\Models\adminRole;
 
 class UserController extends Controller
 {
-    public function listView()
-    {
-        $users = User::all();
-
-        return view('users.index', compact('users'));
-        #view/users/index.blade.php
-    }
-
     // Hàm đăng ký
     public function register(Request $request)
     {

@@ -27,10 +27,36 @@ class AdminController extends BaseController
         if (!$isAdmin) {
             return redirect('/home')->with('error', 'Bạn không có quyền truy cập trang admin.');
         }
-        
-        // Lấy danh sách toàn bộ người dùng
+
+        return view('admin.index');
+    }
+
+    public function usersList()
+    {
+        $user = Auth::user();
+        // Lấy tất cả người dùng từ bảng 'users'
         $users = DB::table('users')->get();
 
-        return view('admin.index', compact('users'));
+        // Trả về view với danh sách người dùng
+        return view('admin.users', compact('users'));
     }
+
+    // Phương thức sửa thông tin người dùng
+    public function editUser($id)
+    {
+        // Lấy thông tin người dùng dựa trên ID
+        $user = DB::table('users')->where('id', $id)->first();
+        return view('admin.editUser', compact('user'));
+    }
+
+    // Phương thức xóa người dùng
+    public function deleteUser($id)
+    {
+        // Xóa người dùng từ bảng 'users'
+        DB::table('users')->where('id', $id)->delete();
+
+        // Redirect về trang danh sách người dùng với thông báo
+        return redirect()->route('admin.users')->with('success', 'Người dùng đã được xóa.');
+    }
+   
 }

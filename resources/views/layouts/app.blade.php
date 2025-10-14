@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Vé Máy Bay</title>
 
-    {{-- Bootstrap --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
-    {{-- Lucide Icons --}}
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
@@ -55,15 +53,13 @@
 <body>
     <nav class="navbar navbar-expand-lg mb-4">
         <div class="container d-flex justify-content-between align-items-center">
-            {{-- Bên trái --}}
             <div class="d-flex align-items-center gap-2">
                 <i data-lucide="plane" class="text-white"></i>
                 <span class="fw-semibold text-white">Book Vé máy Bay</span>
             </div>
 
-            {{-- Bên phải --}}
             <div class="d-flex align-items-center gap-3">
-                @guest   {{-- Nếu chưa đăng nhập --}}
+                @guest
                     <a class="btn btn-outline-light btn-sm" href="/login">
                         <i data-lucide="log-in"></i> Đăng nhập
                     </a>
@@ -72,11 +68,7 @@
                     </a>
                 @endguest
 
-                @auth   {{-- Nếu đã đăng nhập --}}
-                    <a class="btn btn-outline-light btn-sm" href="/users-view">
-                        <i data-lucide="users"></i> Xem danh sách
-                    </a>
-
+                @auth
                     <div class="user-info">
                         <i data-lucide="user"></i>
                         Xin chào, <strong>{{ Auth::user()->name }}</strong>
@@ -96,7 +88,6 @@
     </nav>
 
     <div class="container">
-        {{-- Nội dung riêng của từng view --}}
         @yield('content')
     </div>
 
