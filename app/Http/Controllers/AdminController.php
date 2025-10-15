@@ -49,6 +49,23 @@ class AdminController extends BaseController
         return view('admin.editUser', compact('user'));
     }
 
+    public function updateUser(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+        
+        $user->name = $request->name;
+        $user->email = $request->email;
+
+        if (!empty($request->password)) {
+            $user->password = $request->password;
+        }
+
+        $user->save();
+
+        // Quay lại danh sách người dùng
+        return redirect()->route('admin.users')->with('success', 'Cập nhật thông tin người dùng thành công.');
+    }
+
     // Phương thức xóa người dùng
     public function deleteUser($id)
     {

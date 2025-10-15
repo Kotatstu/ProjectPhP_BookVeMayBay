@@ -13,7 +13,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="">Admin Panel</a>
+            <a class="navbar-brand" href="/admin">Admin Panel</a>
 
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">

@@ -28,8 +28,8 @@
                         <td>{{ \Carbon\Carbon::parse($user->created_at)->format('d-m-Y H:i') }}</td>
                         <td>
                             
-                            <a href="" class="btn btn-sm btn-primary">Sửa</a>
-                            <form action="" method="POST" style="display:inline;">
+                            <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-sm btn-primary">Sửa</a>
+                            <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa người dùng này?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger">Xóa</button>

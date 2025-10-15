@@ -48,3 +48,6 @@ Route::get('/home', function () {
 // Trang admin chỉ cho phép admin truy cập
 Route::get('/admin', [AdminController::class, 'index'])->middleware('auth')->name('admin');
 Route::get('/adminUsers', [AdminController::class, 'usersList'])->name('admin.users');
+Route::get('/adminUsers/{id}/edit', [AdminController::class, 'editUser'])->name('admin.users.edit');
+Route::put('/adminUsers/{id}', [AdminController::class, 'updateUser'])->name('admin.users.update');
+Route::delete('/adminUsers/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
