@@ -22,9 +22,16 @@
 
         </div>
         <div class="col">
-            <button class="btn btn-success w-100 py-4" onclick="window.location.href=''">
+            <button id="btnFlights" class="btn btn-success w-100 py-4" onclick="window.location.href=''">
                 <i class="bi bi-airplane fs-2"></i><br> Quản lý chuyến bay
             </button>
+
+            <script>
+            document.getElementById('btnFlights').onclick = function() {
+                window.location.href = "{{ route('admin.flights') }}";
+            };
+            </script>
+
         </div>
         <div class="col">
             <button class="btn btn-warning w-100 py-4" onclick="window.location.href=''">

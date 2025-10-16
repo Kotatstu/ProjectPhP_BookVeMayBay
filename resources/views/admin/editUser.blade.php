@@ -49,10 +49,18 @@
                     </div>
                 </div>
 
-                <div class="text-end">
+                <div class="d-flex justify-content-end align-items-center mb-3">
+                    <div class="form-check form-switch me-3">
+                        <input class="form-check-input" type="checkbox" id="isAdmin" name="is_admin"
+                            {{ old('is_admin', $isAdmin) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="isAdmin">Quyền quản trị</label>
+                    </div>
+                    <div class="text-end">
                     <a href="{{ route('admin.users') }}" class="btn btn-secondary">Quay lại</a>
                     <button type="submit" class="btn btn-success">Lưu thay đổi</button>
+                </div> 
                 </div>
+
             </form>
         </div>
     </div>
@@ -70,7 +78,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
         passwordInput.setAttribute('type', type);
 
-        // Đổi icon giữa mắt mở và mắt đóng
         icon.classList.toggle('bi-eye');
         icon.classList.toggle('bi-eye-slash');
     });

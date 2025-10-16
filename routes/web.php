@@ -51,3 +51,5 @@ Route::get('/adminUsers', [AdminController::class, 'usersList'])->name('admin.us
 Route::get('/adminUsers/{id}/edit', [AdminController::class, 'editUser'])->name('admin.users.edit');
 Route::put('/adminUsers/{id}', [AdminController::class, 'updateUser'])->name('admin.users.update');
 Route::delete('/adminUsers/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
+Route::get('/adminFlights', [AdminController::class, 'flightsList'])->name('admin.flights');
+Route::get('/adminFlights/{id}', [AdminController::class, 'flightDetail'])->name('admin.flightDetail');

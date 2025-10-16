@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use App\Models\adminRole;
-
+use App\Models\Flight;
 
 class AdminController extends BaseController
 {
@@ -45,8 +45,10 @@ class AdminController extends BaseController
     public function editUser($id)
     {
         // Lấy thông tin người dùng dựa trên ID
-        $user = DB::table('users')->where('id', $id)->first();
-        return view('admin.editUser', compact('user'));
+        $user = User::findOrFail($id);
+        $isAdmin = adminRole::where('U_ID', $user->id)->exists();
+
+        return view('admin.editUser', compact('user', 'isAdmin'));
     }
 
     public function updateUser(Request $request, $id)
@@ -62,6 +64,14 @@ class AdminController extends BaseController
 
         $user->save();
 
+        if ($request->has('is_admin')) {
+        // Nếu có tick => thêm vào bảng adminRole nếu chưa có
+            adminRole::updateOrCreate(['U_ID' => $user->id]);
+        } else {
+            // Nếu bỏ tick => xóa quyền admin
+            adminRole::where('U_ID', $user->id)->delete();
+        }
+
         // Quay lại danh sách người dùng
         return redirect()->route('admin.users')->with('success', 'Cập nhật thông tin người dùng thành công.');
     }
@@ -74,6 +84,33 @@ class AdminController extends BaseController
 
         // Redirect về trang danh sách người dùng với thông báo
         return redirect()->route('admin.users')->with('success', 'Người dùng đã được xóa.');
+    }
+
+    public function flightsList()
+    {
+        $flights = Flight::orderBy('DepartureTime', 'asc')->get();
+
+        return view('admin.flights', compact('flights'));
+    }
+
+    public function flightDetail($id)
+    {
+        $flight = Flight::with([
+            'airline',
+            'aircraft',
+            'departureAirport',
+            'arrivalAirport',
+            'fares.cabinClass'
+        ])->findOrFail($id);
+
+        // Lấy danh sách ghế đã được đặt từ SeatAvailability
+        $bookedSeats = DB::table('SeatAvailability')
+            ->where('FlightID', $flight->FlightID)
+            ->where('IsBooked', 1)
+            ->pluck('SeatID') // chỉ cần SeatID, giả sử SeatID từ 1 đến 116
+            ->toArray();
+
+        return view('admin.flightDetail', compact('flight', 'bookedSeats'));
     }
    
 }
