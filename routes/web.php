@@ -45,6 +45,9 @@ Route::get('/home', function () {
     return view('home');
 })->middleware('auth');
 
+// Trang thông tin user
+Route::get('/user/info', [UserController::class, 'info'])->name('user.info')->middleware('auth');
+
 // Trang admin chỉ cho phép admin truy cập
 Route::get('/admin', [AdminController::class, 'index'])->middleware('auth')->name('admin');
 Route::get('/adminUsers', [AdminController::class, 'usersList'])->name('admin.users');

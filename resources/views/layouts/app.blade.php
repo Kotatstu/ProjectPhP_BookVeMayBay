@@ -69,11 +69,20 @@
                 @endguest
 
                 @auth
+                 {{-- Nếu là admin thì hiện nút Quản trị --}}
+                @if (Auth::user()->isAdmin())
+                    <a class="btn btn-outline-light btn-sm" href="{{ url('/admin') }}">
+                    <i data-lucide="settings"></i> Quản trị
+                </a>
+                @endif
+
                     <div class="user-info">
                         <i data-lucide="user"></i>
                         Xin chào, <strong>{{ Auth::user()->name }}</strong>
                     </div>
-
+                    
+                     <a class="btn btn-outline-light btn-sm" href="{{ route('user.info') }}">
+                    <i data-lucide="info"></i> Thông tin cá nhân</a>
                     <a class="btn btn-outline-light btn-sm"
                        href="/logout"
                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
