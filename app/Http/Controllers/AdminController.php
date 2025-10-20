@@ -112,11 +112,5 @@ class AdminController extends BaseController
 
         return view('admin.flightDetail', compact('flight', 'bookedSeats'));
     }
-    private function authorizeAdmin()
-    {
-        $user = Auth::user();
-        if (!AdminRole::where('U_ID', $user->id)->exists()) {
-            abort(403, 'Bạn không có quyền truy cập trang này.');
-        }
-    }
+   
 }
