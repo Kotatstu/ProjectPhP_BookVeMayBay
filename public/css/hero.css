@@ -1,0 +1,17 @@
+#heroCarousel {
+    margin-top: 50px;
+}
+
+.hero-slide {
+    height: 400px;
+    background-size: cover;
+    background-position: center;
+
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.carousel-item {
+    transition: transform 1.5s ease, opacity 0.5s ease;
+}
