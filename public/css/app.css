@@ -1,0 +1,28 @@
+@import url('navbar.css');
+@import url('hero.css');
+@import url('search.css');
+@import url('card.css');
+@import url('detail.css');
+
+body {
+    background: linear-gradient(to bottom, #97FFFF, #8DEEEE, #79CDCD, #528B8B);
+    font-family: "Segoe UI", sans-serif;
+    padding-top: 50px;
+}
+
+.btn-return {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 10px 30px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.5s ease;
+}
+
+.btn-return:hover {
+     background-color: #0000FF;
+    text-align: center;
+    transform: scale(1.05);
+    color: white;
+}
