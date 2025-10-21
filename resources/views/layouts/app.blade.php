@@ -5,57 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Vé Máy Bay</title>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <style>
-        body {
-            background-color: #f8fafc;
-            font-family: "Segoe UI", sans-serif;
-        }
-
-        /* Thanh navbar */
-        .navbar {
-            background-color: #0d6efd;
-            color: white !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar .btn {
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 500;
-            transition: 0.2s ease;
-        }
-
-        .navbar .btn-outline-light:hover {
-            background-color: white;
-            color: #0d6efd;
-        }
-
-        .navbar .user-info {
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
-        }
-
-        .container {
-            margin-top: 30px;
-        }
-    </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg mb-4">
+    <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
-                <i data-lucide="plane" class="text-white"></i>
-                <span class="fw-semibold text-white">Book Vé máy Bay</span>
+                <a href="{{ url('/') }}" class="d-flex align-items-center gap-2 text-decoration-none" aria-label="Về trang chủ">
+                    <i data-lucide="plane" class="text-white"></i>
+                    <span class="fw-semibold text-white">Book Vé máy Bay</span>
+                </a>
             </div>
 
             <div class="d-flex align-items-center gap-3">
@@ -103,5 +68,6 @@
     <script>
         lucide.createIcons();
     </script>
+    @stack('scripts')
 </body>
 </html>

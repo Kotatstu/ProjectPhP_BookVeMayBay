@@ -3,11 +3,15 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CartController;
 
 // Route về trang home
-Route::get('/', function () {
-    return view('home'); 
-});
+// Route::get('/', function () {
+//     return view('home'); 
+//});
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Route test Hello
 Route::get('/hello', function () {
@@ -41,9 +45,9 @@ Route::post('/login', [UserController::class, 'login']);
 Route::post('/logout', [userController::class, 'logout'])->name('logout');
 
 // Trang Home (chỉ vào được khi đã login)
-Route::get('/home', function () {
-    return view('home');
-})->middleware('auth');
+Route::get('/home', [HomeController::class, 'index'])
+->middleware('auth')
+->name('home');
 
 // Trang thông tin user
 Route::get('/user/info', [UserController::class, 'info'])->name('user.info')->middleware('auth');
@@ -56,3 +60,15 @@ Route::put('/adminUsers/{id}', [AdminController::class, 'updateUser'])->name('ad
 Route::delete('/adminUsers/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
 Route::get('/adminFlights', [AdminController::class, 'flightsList'])->name('admin.flights');
 Route::get('/adminFlights/{id}', [AdminController::class, 'flightDetail'])->name('admin.flightDetail');
+
+//Detail
+Route::get('/detail/{id}', [HomeController::class, 'show'])->name('flights.detail');
+
+// Xem giỏ hàng
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+
+// Thêm vào giỏ hàng
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+
+// Xóa khỏi giỏ hàng
+Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');

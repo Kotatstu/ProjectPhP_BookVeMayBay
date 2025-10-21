@@ -38,7 +38,7 @@
             </div>
 
             <div class="text-center mt-4">
-                <a href="{{ url('/home') }}" class="btn btn-outline-primary px-4 py-2 rounded-pill">
+                <a href="{{ url('/home') }}" class="btn btn-return">
                     <i data-lucide="arrow-left"></i> Quay lại trang chủ
                 </a>
             </div>
