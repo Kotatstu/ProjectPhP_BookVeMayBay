@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CartController;
 
 // Route về trang home
 Route::get('/', function () {
@@ -45,9 +47,6 @@ Route::get('/home', function () {
     return view('home');
 })->middleware('auth');
 
-// Trang thông tin user
-Route::get('/user/info', [UserController::class, 'info'])->name('user.info')->middleware('auth');
-
 // Trang admin chỉ cho phép admin truy cập
 Route::get('/admin', [AdminController::class, 'index'])->middleware('auth')->name('admin');
 Route::get('/adminUsers', [AdminController::class, 'usersList'])->name('admin.users');
@@ -56,3 +55,18 @@ Route::put('/adminUsers/{id}', [AdminController::class, 'updateUser'])->name('ad
 Route::delete('/adminUsers/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
 Route::get('/adminFlights', [AdminController::class, 'flightsList'])->name('admin.flights');
 Route::get('/adminFlights/{id}', [AdminController::class, 'flightDetail'])->name('admin.flightDetail');
+
+// Trang chủ
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+//Detail
+Route::get('/detail/{id}', [HomeController::class, 'show'])->name('flights.detail');
+
+// Xem giỏ hàng
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+
+// Thêm vào giỏ hàng
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+
+// Xóa khỏi giỏ hàng
+Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
