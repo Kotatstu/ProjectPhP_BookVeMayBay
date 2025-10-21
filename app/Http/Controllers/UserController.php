@@ -81,11 +81,4 @@ class UserController extends Controller
         Auth::logout();
         return redirect('/login')->with('success', 'Bạn đã đăng xuất.');
     }
-
-    public function info()
-    {
-        $user = Auth::user(); // Lấy thông tin user đang đăng nhập
-        return view('users.info', compact('user'));
-    }
-
 }
