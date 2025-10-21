@@ -9,6 +9,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use App\Models\adminRole;
 use App\Models\Flight;
+use App\Models\Aircraft;
+use App\Models\Airline;
+use App\Models\Airport;
 
 class AdminController extends BaseController
 {
@@ -119,4 +122,131 @@ class AdminController extends BaseController
             abort(403, 'Bạn không có quyền truy cập trang này.');
         }
     }
+
+    public function listAircraft() {
+        $aircrafts = Aircraft::all();
+        return view('admin.aircrafts', compact('aircrafts'));
+    }
+
+    public function createAircraft() {
+        return view('admin.createAircraft');
+    }
+
+    public function storeAircraft(Request $request) {
+        $request->validate([
+            'AircraftCode' => 'required|unique:Aircrafts',
+            'AircraftType' => 'required',
+        ]);
+
+        Aircraft::create($request->all());
+        return redirect()->route('admin.aircrafts.index')->with('success', 'Thêm máy bay thành công!');
+    }
+
+    public function editAircraft($id) {
+        $aircraft = Aircraft::findOrFail($id);
+        return view('admin.editAircraft', compact('aircraft'));
+    }
+
+    public function updateAircraft(Request $request, $id) {
+        $aircraft = Aircraft::findOrFail($id);
+        $request->validate(['AircraftType' => 'required']);
+        $aircraft->update($request->all());
+        return redirect()->route('admin.aircrafts.index')->with('success', 'Cập nhật máy bay thành công!');
+    }
+
+    public function deleteAircraft($id) {
+        Aircraft::findOrFail($id)->delete();
+        return redirect()->route('admin.aircrafts.index')->with('success', 'Xóa máy bay thành công!');
+    }
+
+    public function listAirline() {
+        $airlines = Airline::all();
+        return view('admin.airlines', compact('airlines'));
+    }
+
+    public function createAirline() {
+        return view('admin.createAirline');
+    }
+
+    public function storeAirline(Request $request) {
+        $request->validate([
+            'AirlineID' => 'required|unique:Airlines',
+            'AirlineName' => 'required',
+            'Country' => 'required',
+            'LogoURL' => 'nullable|url',
+        ]);
+
+        Airline::create($request->all());
+        return redirect()->route('admin.airlines.index')->with('success', 'Thêm hãng hàng không thành công!');
+    }
+
+    public function editAirline($id) {
+        $airline = Airline::findOrFail($id);
+        return view('admin.editAirline', compact('airline'));
+    }
+
+    public function updateAirline(Request $request, $id) {
+        $airline = Airline::findOrFail($id);
+        $request->validate([
+            'AirlineName' => 'required',
+            'Country' => 'required',
+            'LogoURL' => 'nullable|url',
+        ]);
+
+        $airline->update($request->all());
+        return redirect()->route('admin.airlines.index')->with('success', 'Cập nhật hãng hàng không thành công!');
+    }
+
+    public function deleteAirline($id) {
+        Airline::findOrFail($id)->delete();
+        return redirect()->route('admin.airlines.index')->with('success', 'Xóa hãng hàng không thành công!');
+    }
+
+
+    public function listAirport() {
+        $airports = Airport::all();
+        return view('admin.airports', compact('airports'));
+    }
+
+    public function createAirport() {
+        return view('admin.createAirport');
+    }
+
+    public function storeAirport(Request $request) {
+        $request->validate([
+            'AirportCode' => 'required|unique:Airports',
+            'AirportName' => 'required',
+            'City' => 'required',
+            'Country' => 'required',
+            'TimeZone' => 'required',
+        ]);
+
+        Airport::create($request->all());
+        return redirect()->route('admin.airports.index')->with('success', 'Thêm sân bay thành công!');
+    }
+
+    public function editAirport($id) {
+        $airport = Airport::findOrFail($id);
+        return view('admin.editAirport', compact('airport'));
+    }
+
+    public function updateAirport(Request $request, $id) {
+        $airport = Airport::findOrFail($id);
+        $request->validate([
+            'AirportName' => 'required',
+            'City' => 'required',
+            'Country' => 'required',
+            'TimeZone' => 'required',
+        ]);
+
+        $airport->update($request->all());
+        return redirect()->route('admin.airports.index')->with('success', 'Cập nhật sân bay thành công!');
+    }
+
+    public function deleteAirport($id) {
+        Airport::findOrFail($id)->delete();
+        return redirect()->route('admin.airports.index')->with('success', 'Xóa sân bay thành công!');
+    }
+
+
 }

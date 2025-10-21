@@ -4,6 +4,36 @@
 
 @section('content')
 <div class="container mt-4">
+
+    {{-- Thanh điều hướng con --}}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 rounded shadow-sm">
+        <div class="container-fluid">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('admin/airlines*') ? 'active fw-bold text-primary' : '' }}" href="{{ route('admin.airlines.index') }}">
+                        ✈️ Hãng hàng không
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('admin/aircrafts*') ? 'active fw-bold text-primary' : '' }}" href="{{ route('admin.aircrafts.index') }}">
+                        🛩️ Máy bay
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('admin/airports*') ? 'active fw-bold text-primary' : '' }}" href="{{ route('admin.airports.index') }}">
+                        🏢 Sân bay
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('admin/flights*') ? 'active fw-bold text-primary' : '' }}" href="{{ route('admin.flights') }}">
+                        🗓️ Chuyến bay
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    {{-- Danh sách chuyến bay --}}
     <h3 class="mb-4">Danh sách chuyến bay</h3>
 
     <table class="table table-bordered table-hover align-middle text-center">

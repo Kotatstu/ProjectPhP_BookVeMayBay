@@ -13,7 +13,6 @@ class Aircraft extends Model
     protected $fillable = [
         'AircraftCode',
         'AircraftType',
-        'TotalSeats',
     ];
 
     public function seats()
