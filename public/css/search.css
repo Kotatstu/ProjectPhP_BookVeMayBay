@@ -1,36 +1,99 @@
+/* Tổng thể overlay */
 .search-overlay {
-    position: absolute;
-    top: 110%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 92%;
+    position: relative;
     z-index: 10;
+    width: 90%;
+    margin: -80px auto 60px auto;
 }
 
+/* Hộp tìm kiếm dạng glass đẹp */
 .search-box {
-    background-color: white;
-    border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 28px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
     max-width: 1200px;
     margin: auto;
+    padding: 40px 50px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
 }
 
+/* Tiêu đề */
+.search-box h4 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* Nhãn ô nhập */
+.form-label {
+    font-weight: 600;
+    color: black;
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+/* Ô nhập */
+.form-control {
+    height: 48px;
+    border-radius: 16px;
+    border: 1.5px solid rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.9);
+    color: #000;
+    font-size: 1rem;
+    padding: 10px 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+/* Hiệu ứng hover & focus */
+.form-control:hover,
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+    outline: none;
+    background: #ffffff;
+}
+
+/* Nút tìm kiếm */
 .btn-search {
-    background-color: #007bff;
+    background: linear-gradient(135deg, #007bff, #0056d2);
     border: none;
     color: white;
-    padding: 10px 30px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.5s ease;
+    height: 48px;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.35);
 }
 
 .btn-search:hover {
-    background-color: #0000FF;
-    transform: scale(1.05);
-    color: white;
+    background: linear-gradient(135deg, #0056d2, #003c99);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 91, 187, 0.45);
 }
 
-.form-control {
-    border-color: #444444;
+/* Căn chỉnh hàng form */
+.row.g-3 {
+    margin-top: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .search-box {
+        padding: 30px 25px;
+    }
+
+    .form-control, 
+    .btn-search {
+        width: 100%;
+    }
+
+    .btn-search {
+        margin-top: 5px;
+    }
 }

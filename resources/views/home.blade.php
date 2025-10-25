@@ -36,92 +36,133 @@
 
 <!-- Search -->
 <div class="search-overlay">
-    <div class="search-box p-4 rounded shadow-lg bg-white">
-        <h4 class="fw-semibold mb-3">Tìm & đặt vé máy bay giá rẻ</h4>
+    <div class="search-box">
+        <h4 class="fw-semibold mb-4 text-center">
+        Tìm & đặt vé máy bay giá rẻ
+        </h4>
+
         <form>
-            <div class="row g-3 align-items-center">
-                <div class="col-md-3">
+            <div class="row g-3 justify-content-center align-items-end">
+                <div class="col-md-3 col-sm-6">
                     <label class="form-label">Từ</label>
                     <input type="text" class="form-control" placeholder="From...">
                 </div>
-                <div class="col-md-3">
+
+                <div class="col-md-3 col-sm-6">
                     <label class="form-label">Đến</label>
                     <input type="text" class="form-control" placeholder="To...">
                 </div>
-                <div class="col-md-3">
+
+                <div class="col-md-3 col-sm-6">
                     <label class="form-label">Ngày khởi hành</label>
                     <input type="date" class="form-control">
                 </div>
-                <div class="col-md-3">
-                     <label class="form-label d-block">&nbsp;</label>
-                    <button type="submit" class="btn btn-search w-100">Tìm chuyến bay</button>
+
+                <div class="col-md-2 col-sm-6">
+                    <button type="submit" class="btn btn-search w-100">
+                        Tìm chuyến bay
+                    </button>
                 </div>
             </div>
         </form>
     </div>
 </div>
 
+
+
 <!-- Thông tin vé máy bay -->
 <div class="card-container my-3">
-        <h3 class="mb-3">Vé máy bay nội địa</h3>
-        <div class="d-flex align-items-center">
-            <button class="btn btn-light me-2 prev-btn" style="display: none;">&#8592;</button>
-            <div class="card-wrapper">
-                @foreach($flights as $flight)
-                    <a href="{{ route('flights.detail', $flight->id) }}" class="text-decoration-none">
-                        <div class="flight-card card">
-                            <img src="{{ $flight->airline_logo }}" class="card-img-top" alt="{{ $flight->airline_name }}">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ $flight->from }} → {{ $flight->to }}</h5>
-                                <p class="card-text">Ngày bay: {{ $flight->departure_date }}</p>
-                                <p class="card-text fw-bold">{{ number_format($flight->fare) }} VND</p>
-                            </div>
-                        </div>
-                    </a>
-                @endforeach
-            </div>
-            <button class="btn btn-light ms-2 next-btn">&#8594;</button>
-        </div>
+    <h3 class="mb-3 text-left">Vé máy bay nội địa</h3>
+    <div class="card-wrapper">
+        @foreach($flights as $flight)
+            <a href="{{ route('flights.detail', $flight->id) }}" class="text-decoration-none">
+                <div class="flight-card card">
+                    <img src="{{ $flight->airline_logo }}" class="card-img-top" alt="{{ $flight->airline_name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ $flight->from }} → {{ $flight->to }}</h5>
+                        <p class="card-text">Ngày bay: {{ $flight->departure_date }}</p>
+                        <p class="card-text fw-bold">{{ number_format($flight->fare) }} VND</p>
+                    </div>
+                </div>
+            </a>
+        @endforeach
     </div>
 </div>
 @endsection
+
+
 
 @push('scripts')
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     const wrapper = document.querySelector('.card-wrapper');
-    const nextBtn = document.querySelector('.next-btn');
-    const prevBtn = document.querySelector('.prev-btn');
     const cards = document.querySelectorAll('.flight-card');
 
-    if(cards.length === 0) return;
+    if (!wrapper || cards.length === 0) return;
 
-    // Tính tổng width 1 card bao gồm margin
     const card = cards[0];
     const style = getComputedStyle(card);
-    const cardWidth = card.offsetWidth + parseInt(style.marginRight);
+    const cardWidth = card.offsetWidth + parseInt(style.marginRight || 20);
 
-    // Cập nhật trạng thái nút
+    let isScrolling = false;
+
+    // --- Cập nhật hiển thị nút ---
     function updateButtons() {
-        prevBtn.style.display = wrapper.scrollLeft > 0 ? 'inline-block' : 'none';
-        nextBtn.style.display = wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 1 ? 'none' : 'inline-block';
+        const atStart = wrapper.scrollLeft <= 5;
+        const atEnd = wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 5;
+
+        prevBtn.style.opacity = atStart ? "0" : "1";
+        prevBtn.style.pointerEvents = atStart ? "none" : "auto";
+
+        nextBtn.style.opacity = atEnd ? "0" : "1";
+        nextBtn.style.pointerEvents = atEnd ? "none" : "auto";
     }
 
-    updateButtons();
+    // --- Cuộn mượt với animation ---
+    function smoothScroll(distance) {
+        if (isScrolling) return;
+        isScrolling = true;
 
-    nextBtn.addEventListener('click', function() {
-        wrapper.scrollLeft += cardWidth;
-        setTimeout(updateButtons, 200); // cập nhật sau khi scroll
+        const start = wrapper.scrollLeft;
+        const end = start + distance;
+        const duration = 400;
+        const startTime = performance.now();
+
+        function animateScroll(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            wrapper.scrollLeft = start + (end - start) * easeInOutCubic(progress);
+
+            if (progress < 1) {
+                requestAnimationFrame(animateScroll);
+            } else {
+                isScrolling = false;
+                updateButtons();
+            }
+        }
+
+        requestAnimationFrame(animateScroll);
+    }
+
+    // --- Hàm easing cho chuyển động mượt ---
+    function easeInOutCubic(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    // --- Sự kiện click ---
+    nextBtn.addEventListener('click', () => smoothScroll(cardWidth));
+    prevBtn.addEventListener('click', () => smoothScroll(-cardWidth));
+
+    // --- Theo dõi cuộn thủ công ---
+    wrapper.addEventListener('scroll', () => {
+        clearTimeout(wrapper._scrollTimer);
+        wrapper._scrollTimer = setTimeout(updateButtons, 150);
     });
 
-    prevBtn.addEventListener('click', function() {
-        wrapper.scrollLeft -= cardWidth;
-        setTimeout(updateButtons, 200);
-    });
-
-    // Optional: khi resize window
+    // --- Khi resize ---
     window.addEventListener('resize', updateButtons);
-});
 
+    updateButtons();
+});
 </script>
 @endpush

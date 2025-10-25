@@ -1,7 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container my-5">
+
+<style>
+    .cart-container {
+        padding-top: 120px;
+        margin-bottom: 50px;
+    }
+</style>
+
+<div class="container cart-container">
     <h3 class="mb-4">Giỏ hàng</h3>
 
     @if(session('cart') && count(session('cart')) > 0)
@@ -45,4 +53,5 @@
         <p>Giỏ hàng trống.</p>
     @endif
 </div>
+
 @endsection

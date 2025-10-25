@@ -68,19 +68,29 @@
 @endsection
 
 @push('scripts')
+<!-- Gọi Lucide nếu chưa có -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const togglePassword = document.getElementById('togglePassword');
-    const passwordInput = document.getElementById('password');
-    const icon = togglePassword.querySelector('i');
+  lucide.createIcons(); // Kích hoạt icon Lucide
 
-    togglePassword.addEventListener('click', function () {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
+  const togglePassword = document.getElementById('togglePassword');
+  const passwordInput = document.getElementById('password');
+  let isVisible = false;
 
-        icon.classList.toggle('bi-eye');
-        icon.classList.toggle('bi-eye-slash');
-    });
+  // Mặc định: ẩn mật khẩu, icon là eye-off
+  togglePassword.innerHTML = '<i data-lucide="eye-off"></i>';
+  lucide.createIcons();
+
+  togglePassword.addEventListener('click', () => {
+    isVisible = !isVisible;
+    passwordInput.type = isVisible ? 'text' : 'password';
+
+    // Đổi icon giữa eye / eye-off
+    togglePassword.innerHTML = `<i data-lucide="${isVisible ? 'eye' : 'eye-off'}"></i>`;
+    lucide.createIcons();
+  });
 });
 </script>
 @endpush

@@ -68,6 +68,27 @@
     <script>
         lucide.createIcons();
     </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+    let lastScrollTop = 0;
+    const navbar = document.querySelector(".navbar");
+
+    window.addEventListener("scroll", function() {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        if (scrollTop > lastScrollTop && scrollTop > 50) {
+            // Cuộn xuống → ẩn navbar
+            navbar.classList.add("hidden");
+        } else {
+            // Cuộn lên → hiện navbar
+            navbar.classList.remove("hidden");
+        }
+
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    });
+});
+</script>
+
     @stack('scripts')
 </body>
 </html>
