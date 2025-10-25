@@ -1,37 +1,79 @@
-
 .navbar {
-    background-color: #FFFFFF;
-    color: #000000;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    background: linear-gradient(90deg, #00bfff, #0072ff);
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    padding: 6px 30px; /* giảm chiều cao */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    transition: transform 0.35s ease, background 0.3s ease;
 }
 
-.navbar .navbar-brand,
-.navbar .text-white,
-.navbar .user-info {
-    color: #000000 !important;
+/* Ẩn khi cuộn xuống */
+.navbar.hidden {
+    transform: translateY(-120%);
 }
 
+/* Logo / thương hiệu */
+.navbar-brand {
+    font-weight: 1000;
+    font-size: 1.2rem;
+    color: #fff !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Nút hành động */
 .navbar .btn-outline-light {
-    border-color: #0000FF;
-    color: #000000;
+    border: 1.8px solid #fff;
+    color: #fff;
     background-color: transparent;
-    transition: 0.2s ease;
-    font-weight: bold;
+    font-weight: 500;
+    border-radius: 25px;
+    padding: 6px 18px;
+    transition: all 0.25s ease;
 }
 
 .navbar .btn-outline-light:hover {
-    background-color: #00FFFF;
-    color: #000000;
+    background-color: #fff;
+    color: #0072ff;
+    transform: scale(1.04);
 }
 
+/* Thông tin người dùng */
 .user-info {
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 0.95rem;
-    color: #f0f0f0;
+    color: #fff;
 }
 
-.container {
-    margin-top: 30px;
+/* Giữ khoảng trống cho phần hero bên dưới */
+.hero-section {
+    margin-top: 70px; /* navbar nhỏ hơn */
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 20px;
+    }
+
+    .user-info {
+        margin-top: 8px;
+    }
+
+    .hero-section {
+        margin-top: 90px;
+    }
 }
