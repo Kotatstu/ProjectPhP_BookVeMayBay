@@ -5,7 +5,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Danh sách hãng hàng không</h2>
-    <a href="" class="btn btn-primary">+ Thêm hãng</a>
+    <a href="{{ route('admin.airlines.create') }}" class="btn btn-primary">+ Thêm hãng</a>
 </div>
 
 @if (session('success'))
@@ -38,8 +38,8 @@
                     @endif
                 </td>
                 <td>
-                    <a href="" class="btn btn-warning btn-sm">Sửa</a>
-                    <form action="" method="POST" style="display:inline-block;">
+                    <a href="{{ route('admin.airlines.edit', $airline->AirlineID) }}" class="btn btn-warning btn-sm">Sửa</a>
+                    <form action="{{ route('admin.airlines.destroy', $airline->AirlineID) }}" method="POST" style="display:inline-block;">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Xác nhận xóa hãng hàng không này?')">Xóa</button>

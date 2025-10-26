@@ -60,8 +60,14 @@ Route::put('/adminUsers/{id}', [AdminController::class, 'updateUser'])->name('ad
 Route::delete('/adminUsers/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
 Route::get('/adminFlights', [AdminController::class, 'flightsList'])->name('admin.flights');
 Route::get('/adminFlights/{id}', [AdminController::class, 'flightDetail'])->name('admin.flightDetail');
+Route::get('/admin/flights/create', [AdminController::class, 'createFlight'])->name('admin.flights.create');
+Route::post('/admin/flights/store', [AdminController::class, 'storeFlight'])->name('admin.flights.store');
+Route::get('/admin/flights/edit/{id}', [AdminController::class, 'editFlight'])->name('admin.flights.edit');
+Route::post('/admin/flights/update/{id}', [AdminController::class, 'updateFlight'])->name('admin.flights.update');
+Route::delete('/admin/flights/delete/{id}', [AdminController::class, 'deleteFlight'])->name('admin.flights.delete');
+
 Route::prefix('admin')->name('admin.')->group(function () {
-    // --- Aircraft ---
+    //Aircraft
     Route::get('/aircrafts', [AdminController::class, 'listAircraft'])->name('aircrafts.index');
     Route::get('/aircrafts/create', [AdminController::class, 'createAircraft'])->name('aircrafts.create');
     Route::post('/aircrafts', [AdminController::class, 'storeAircraft'])->name('aircrafts.store');
@@ -69,7 +75,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::put('/aircrafts/{id}', [AdminController::class, 'updateAircraft'])->name('aircrafts.update');
     Route::delete('/aircrafts/{id}', [AdminController::class, 'deleteAircraft'])->name('aircrafts.destroy');
 
-    // --- Airline ---
+    //Airline
     Route::get('/airlines', [AdminController::class, 'listAirline'])->name('airlines.index');
     Route::get('/airlines/create', [AdminController::class, 'createAirline'])->name('airlines.create');
     Route::post('/airlines', [AdminController::class, 'storeAirline'])->name('airlines.store');
@@ -77,7 +83,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::put('/airlines/{id}', [AdminController::class, 'updateAirline'])->name('airlines.update');
     Route::delete('/airlines/{id}', [AdminController::class, 'deleteAirline'])->name('airlines.destroy');
 
-    // --- Airport ---
+    //Airport
     Route::get('/airports', [AdminController::class, 'listAirport'])->name('airports.index');
     Route::get('/airports/create', [AdminController::class, 'createAirport'])->name('airports.create');
     Route::post('/airports', [AdminController::class, 'storeAirport'])->name('airports.store');

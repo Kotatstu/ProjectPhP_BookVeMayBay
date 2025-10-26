@@ -5,7 +5,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Danh sách sân bay</h2>
-    <a href="" class="btn btn-primary">+ Thêm sân bay</a>
+    <a href="{{ route('admin.airports.create') }}" class="btn btn-primary">+ Thêm sân bay</a>
 </div>
 
 @if (session('success'))
@@ -34,8 +34,8 @@
                 <td>{{ $airport->Country }}</td>
                 <td>{{ $airport->TimeZone }}</td>
                 <td>
-                    <a href="" class="btn btn-warning btn-sm">Sửa</a>
-                    <form action="" method="POST" style="display:inline-block;">
+                    <a href="{{ route('admin.airports.edit', $airport->AirportCode) }}" class="btn btn-warning btn-sm">Sửa</a>
+                    <form action="{{ route('admin.airports.destroy', $airport->AirportCode) }}" method="POST" style="display:inline-block;">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Xác nhận xóa sân bay này?')">Xóa</button>

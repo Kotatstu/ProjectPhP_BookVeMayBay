@@ -26,7 +26,7 @@
 
         <div class="mb-3">
             <label for="LogoURL" class="form-label">Logo URL</label>
-            <input type="url" class="form-control" id="LogoURL" name="LogoURL" value="{{ old('LogoURL') }}">
+            <input type="text" class="form-control" id="LogoURL" name="LogoURL" value="{{ old('LogoURL') }}">
         </div>
 
         <button type="submit" class="btn btn-primary">Lưu</button>

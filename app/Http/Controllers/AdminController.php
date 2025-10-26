@@ -12,6 +12,7 @@ use App\Models\Flight;
 use App\Models\Aircraft;
 use App\Models\Airline;
 use App\Models\Airport;
+use Carbon\Carbon;
 
 class AdminController extends BaseController
 {
@@ -115,6 +116,80 @@ class AdminController extends BaseController
 
         return view('admin.flightDetail', compact('flight', 'bookedSeats'));
     }
+
+    public function createFlight()
+    {
+        $airlines = \App\Models\Airline::all();
+        $aircrafts = \App\Models\Aircraft::all();
+        $airports = \App\Models\Airport::all();
+
+        return view('admin.createFlight', compact('airlines', 'aircrafts', 'airports'));
+    }
+
+    public function storeFlight(Request $request)
+    {
+        $validated = $request->validate([
+            'AirlineID' => 'required|exists:Airlines,AirlineID',
+            'FlightNumber' => 'required|string|max:10|unique:Flights,FlightNumber',
+            'AircraftID' => 'required|exists:Aircrafts,AircraftID',
+            'DepartureAirport' => 'required|exists:Airports,AirportCode|different:ArrivalAirport',
+            'ArrivalAirport' => 'required|exists:Airports,AirportCode|different:DepartureAirport',
+            'DepartureTime' => 'required|date|before:ArrivalTime',
+            'ArrivalTime' => 'required|date|after:DepartureTime',
+            'Status' => 'required|string',
+        ]);
+
+        // Chuyển đổi datetime-local (2025-10-26T14:00) thành định dạng SQL hợp lệ
+        $validated['DepartureTime'] = Carbon::parse($validated['DepartureTime'])->format('Y-m-d H:i:s');
+        $validated['ArrivalTime']   = Carbon::parse($validated['ArrivalTime'])->format('Y-m-d H:i:s');
+
+        Flight::create($validated);
+
+        return redirect()->route('admin.flights')->with('success', 'Thêm chuyến bay mới thành công!');
+    }
+
+    public function editFlight($id)
+    {
+        $flight = Flight::findOrFail($id);
+        $airlines = Airline::all();
+        $aircrafts = Aircraft::all();
+        $airports = Airport::all();
+
+        return view('admin.editFlight', compact('flight', 'airlines', 'aircrafts', 'airports'));
+    }
+
+    public function updateFlight(Request $request, $id)
+    {
+        $flight = Flight::findOrFail($id);
+
+        $validated = $request->validate([
+            'AirlineID' => 'required|exists:Airlines,AirlineID',
+            'FlightNumber' => 'required|string|max:10|unique:Flights,FlightNumber,' . $id . ',FlightID',
+            'AircraftID' => 'required|exists:Aircrafts,AircraftID',
+            'DepartureAirport' => 'required|exists:Airports,AirportCode|different:ArrivalAirport',
+            'ArrivalAirport' => 'required|exists:Airports,AirportCode|different:DepartureAirport',
+            'DepartureTime' => 'required|date|before:ArrivalTime',
+            'ArrivalTime' => 'required|date|after:DepartureTime',
+            'Status' => 'required|string',
+        ]);
+
+        //Chuyển đổi định dạng datetime-local => SQL datetime
+        $validated['DepartureTime'] = Carbon::parse($validated['DepartureTime'])->format('Y-m-d H:i:s');
+        $validated['ArrivalTime']   = Carbon::parse($validated['ArrivalTime'])->format('Y-m-d H:i:s');
+
+        $flight->update($validated);
+
+        return redirect()->route('admin.flights')->with('success', 'Cập nhật chuyến bay thành công!');
+    }
+
+    public function deleteFlight($id)
+    {
+        $flight = Flight::findOrFail($id);
+        $flight->delete();
+
+        return redirect()->route('admin.flights')->with('success', 'Đã xóa chuyến bay!');
+    }
+
     private function authorizeAdmin()
     {
         $user = Auth::user();
@@ -173,7 +248,7 @@ class AdminController extends BaseController
             'AirlineID' => 'required|unique:Airlines',
             'AirlineName' => 'required',
             'Country' => 'required',
-            'LogoURL' => 'nullable|url',
+            'LogoURL' => 'nullable',
         ]);
 
         Airline::create($request->all());
@@ -190,7 +265,7 @@ class AdminController extends BaseController
         $request->validate([
             'AirlineName' => 'required',
             'Country' => 'required',
-            'LogoURL' => 'nullable|url',
+            'LogoURL' => 'nullable',
         ]);
 
         $airline->update($request->all());
