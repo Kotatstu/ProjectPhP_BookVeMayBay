@@ -102,3 +102,7 @@ Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 
 // Xóa khỏi giỏ hàng
 Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+
+// Thanh toán
+Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+Route::post('/cart/checkout-all', [CartController::class, 'checkoutAll'])->name('cart.checkoutAll');

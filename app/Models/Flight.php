@@ -44,6 +44,6 @@ class Flight extends Model
 
     public function fares()
     {
-        return $this->hasMany(Fare::class, 'FlightID');
+        return $this->hasMany(Fare::class, 'FlightID', 'FlightID');
     }
 }
