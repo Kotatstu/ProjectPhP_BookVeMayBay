@@ -1,0 +1,13 @@
+.cart-container {
+    padding-top: 120px;
+    margin-bottom: 60px;
+}
+
+.cart-table th, .cart-table td {
+    vertical-align: middle;
+}
+
+.cart-logo {
+    width: 80px;
+    height: auto;
+}

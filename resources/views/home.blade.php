@@ -73,15 +73,15 @@
 <!-- Thông tin vé máy bay -->
 <div class="card-container my-3">
     <h3 class="mb-3 text-left">Vé máy bay nội địa</h3>
-    <div class="card-wrapper">
+    <div class="card-wrapper d-flex flex-wrap gap-3">
         @foreach($flights as $flight)
             <a href="{{ route('flights.detail', $flight->id) }}" class="text-decoration-none">
-                <div class="flight-card card">
-                    <img src="{{ $flight->airline_logo }}" class="card-img-top" alt="{{ $flight->airline_name }}">
+                <div class="flight-card card shadow-sm" style="width: 18rem;">
+                    <img src="{{ asset($flight->airline_logo) }}" class="card-img-top" alt="{{ $flight->airline_name }}">
                     <div class="card-body">
-                        <h5 class="card-title">{{ $flight->from }} → {{ $flight->to }}</h5>
-                        <p class="card-text">Ngày bay: {{ $flight->departure_date }}</p>
-                        <p class="card-text fw-bold">{{ number_format($flight->fare) }} VND</p>
+                        <h5 class="card-title">{{ $flight->from_city }} → {{ $flight->to_city }}</h5>
+                        <p class="card-text">Ngày bay: {{ date('d/m/Y H:i', strtotime($flight->departure_time)) }}</p>
+                        <p class="card-text fw-bold text-danger">{{ number_format($flight->fare, 0, ',', '.') }} VND</p>
                     </div>
                 </div>
             </a>
