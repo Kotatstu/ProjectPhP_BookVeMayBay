@@ -10,18 +10,30 @@
     }
 
     .user-info-card {
-        width: 60%;
-        max-width: 900px;
+        width: 70%;
+        max-width: 950px;
         border-radius: 20px;
+    }
+
+    .btn-custom {
+        border-radius: 25px;
+        padding: 10px 25px;
+        transition: all 0.3s ease;
+        border: none;
+        color: white;
+    }
+
+    .btn-update {
+        background-color: #28a745;
+    }
+
+    .btn-update:hover {
+        background-color: #218838;
+        transform: scale(1.05);
     }
 
     .btn-return {
         background-color: #007bff;
-        color: white;
-        border-radius: 25px;
-        padding: 10px 25px;
-        border: none;
-        transition: all 0.3s ease;
     }
 
     .btn-return:hover {
@@ -40,46 +52,68 @@
 
         <div class="card-body p-4">
             <div class="row g-4">
+                {{-- THÔNG TIN CÁ NHÂN --}}
                 <div class="col-md-6">
                     <div class="p-3 bg-light rounded-3 border">
-                        <h5 class="text-primary">
-                            <i data-lucide="id-card" class="me-2"></i>Thông tin cá nhân
-                        </h5>
+                        <h5 class="text-primary"><i data-lucide="id-card" class="me-2"></i>Thông tin cá nhân</h5>
                         <hr>
                         <p><strong>Họ và tên:</strong> <span class="text-muted">{{ $user->name }}</span></p>
                         <p><strong>Email:</strong> <span class="text-muted">{{ $user->email }}</span></p>
-                        <p><strong>Số điện thoại:</strong> <span class="text-muted">{{ $user->phone ?? 'Chưa cập nhật' }}</span></p>
-                        <p><strong>Địa chỉ:</strong> <span class="text-muted">{{ $user->address ?? 'Chưa cập nhật' }}</span></p>
+                        <p><strong>Số điện thoại:</strong>
+                            <span class="text-muted">{{ optional($customer)->Phone ?? 'Chưa cập nhật' }}</span>
+                        </p>
+                        <p><strong>Giới tính:</strong>
+                            <span class="text-muted">{{ optional($customer)->Gender ?? 'Chưa cập nhật' }}</span>
+                        </p>
+                        <p><strong>Ngày sinh:</strong>
+                            <span class="text-muted">
+                                @if(optional($customer)->DateOfBirth)
+                                    {{ date('d/m/Y', strtotime(optional($customer)->DateOfBirth)) }}
+                                @else
+                                    Chưa cập nhật
+                                @endif
+                            </span>
+                        </p>
+                        <p><strong>Quốc tịch:</strong>
+                            <span class="text-muted">{{ optional($customer)->Nationality ?? 'Chưa cập nhật' }}</span>
+                        </p>
                     </div>
                 </div>
 
+                {{-- THÔNG TIN TÀI KHOẢN --}}
                 <div class="col-md-6">
                     <div class="p-3 bg-light rounded-3 border">
-                        <h5 class="text-primary">
-                            <i data-lucide="info" class="me-2"></i>Thông tin tài khoản
-                        </h5>
+                        <h5 class="text-primary"><i data-lucide="info" class="me-2"></i>Thông tin tài khoản</h5>
                         <hr>
                         <p><strong>ID người dùng:</strong> <span class="text-muted">{{ $user->id }}</span></p>
                         <p><strong>Ngày tạo tài khoản:</strong>
                             <span class="text-muted">{{ $user->created_at->format('d/m/Y H:i') }}</span>
                         </p>
-                        <p><strong>Trạng thái:</strong>
-                            <span class="badge bg-success">Hoạt động</span>
+
+                        <p><strong>Hội viên:</strong>
+                            @if(isset($loyalty))
+                                <span class="badge bg-success">{{ $loyalty->MembershipLevel }}</span><br>
+                                <strong>Điểm tích lũy:</strong>
+                                <span class="text-primary fw-bold">{{ $loyalty->Points }}</span>
+                            @else
+                                <span class="badge bg-secondary">Chưa tham gia</span>
+                            @endif
                         </p>
                     </div>
                 </div>
             </div>
 
             <div class="text-center mt-4">
-                <a href="{{ url('/home') }}" class="btn btn-return">
-                    <i data-lucide="arrow-left"></i> Quay lại trang chủ
-                </a>
-            </div>
+                <a href="{{ url('/home') }}" class="btn btn-custom btn-return me-3">
+                <i data-lucide="arrow-left"></i> Quay lại trang chủ
+            </a>
+                <a href="{{ route('user.edit') }}" class="btn btn-custom btn-update">
+                <i data-lucide="edit"></i> Cập nhật thông tin
+            </a>
+        </div>
         </div>
     </div>
 </div>
 
-<script>
-    lucide.createIcons();
-</script>
+<script>lucide.createIcons();</script>
 @endsection

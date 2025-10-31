@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Customer;
 use Illuminate\Support\Facades\Auth;
 use App\Models\adminRole;
 
@@ -86,6 +87,39 @@ class UserController extends Controller
     {
         $user = Auth::user(); // Lấy thông tin user đang đăng nhập
         return view('users.info', compact('user'));
+    }
+ public function show()
+    {
+        $user = Auth::user();
+        $customer = Customer::where('UserID', $user->id)->first();
+        $loyalty = $user->loyalty ?? null; // nếu có quan hệ loyalty
+        return view('user.info', compact('user', 'customer', 'loyalty'));
+    }
+
+    public function edit()
+    {
+        $user = Auth::user();
+        $customer = Customer::where('UserID', $user->id)->first();
+        return view('users.edit', compact('user', 'customer'));
+    }
+
+    public function update(Request $request)
+    {
+        $user = User::find(Auth::id());
+
+        // Cập nhật bảng users
+        $user->name = $request->input('name');
+        $user->save();
+
+        // Cập nhật hoặc tạo mới customer
+        $customer = Customer::firstOrCreate(['UserID' => $user->id]);
+        $customer->Phone = $request->input('phone');
+        $customer->Gender = $request->input('gender');
+        $customer->DateOfBirth = $request->input('date_of_birth');
+        $customer->Nationality = $request->input('nationality');
+        $customer->save();
+
+        return redirect()->route('user.info')->with('success', 'Cập nhật thông tin thành công!');
     }
 
 }

@@ -50,4 +50,19 @@ class User extends Authenticatable
     {
         return AdminRole::where('U_ID', $this->id)->exists();
     }
+public function loyaltyProgram()
+{
+    return $this->hasOne(LoyaltyProgram::class, 'CustomerID');
+}
+public function getIsMemberAttribute()
+{
+    // Nếu khách hàng có dòng trong bảng loyalty_programs → là hội viên
+    return $this->loyaltyProgram()->exists();
+}
+public function user()
+{
+    return $this->belongsTo(User::class, 'UserID', 'id');
+}
+
+
 }
