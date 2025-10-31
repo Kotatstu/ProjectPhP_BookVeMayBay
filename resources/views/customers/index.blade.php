@@ -1,48 +1,83 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Danh sách khách hàng</h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white p-6 rounded shadow">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead>
-                        <tr>
-                            <th class="px-4 py-2">ID</th>
-                            <th class="px-4 py-2">Tên</th>
-                            <th class="px-4 py-2">Email</th>
-                            <th class="px-4 py-2">Điện thoại</th>
-                            <th class="px-4 py-2">Trạng thái</th>
-                            <th class="px-4 py-2">Cấp độ</th>
-                            <th class="px-4 py-2">Điểm</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($customers as $customer)
-                            <tr class="border-b">
-                                <td class="px-4 py-2">{{ $customer->CustomerID }}</td>
-                                <td class="px-4 py-2">{{ $customer->user->name ?? '-' }}</td>
-                                <td class="px-4 py-2">{{ $customer->user->email ?? '-' }}</td>
-                                <td class="px-4 py-2">{{ $customer->Phone ?? '-' }}</td>
-                                <td class="px-4 py-2">
-                                    @if($customer->is_member)
-                                        <span class="text-green-600 font-semibold">Hội viên</span>
-                                    @else
-                                        <span class="text-gray-500">Chưa là hội viên</span>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-2">
-                                    {{ $customer->loyaltyProgram->MembershipLevel ?? '-' }}
-                                </td>
-                                <td class="px-4 py-2">
-                                    {{ $customer->loyaltyProgram->Points ?? '-' }}
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
+@section('content')
+<style>
+    body {
+        background: linear-gradient(to bottom right, #e3f2fd, #ffffff);
+    }
+    .customer-container {
+        padding: 80px 0; /* Tạo khoảng trống trên dưới */
+        display: flex;
+        justify-content: center;
+    }
+    .customer-card {
+        width: 90%;
+        max-width: 1100px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        padding: 30px;
+    }
+    .table th {
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+    }
+    .table td {
+        vertical-align: middle;
+        text-align: center;
+    }
+    h2 {
+        text-align: center;
+        color: #007bff;
+        margin-bottom: 25px;
+        font-weight: 600;
+    }
+</style>
+
+<div class="customer-container">
+    <div class="customer-card">
+        <h2><i class="bi bi-people-fill me-2"></i>Danh sách khách hàng</h2>
+
+        <table class="table table-bordered table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên</th>
+                    <th>Email</th>
+                    <th>Điện thoại</th>
+                    <th>Trạng thái</th>
+                    <th>Cấp độ</th>
+                    <th>Điểm</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($customers as $customer)
+                    <tr>
+                        <td>{{ $customer->CustomerID }}</td>
+                        <td>{{ $customer->user->name ?? '-' }}</td>
+                        <td>{{ $customer->user->email ?? '-' }}</td>
+                        <td>{{ $customer->Phone ?? '-' }}</td>
+                        <td>
+                            @if($customer->is_member)
+                                <span class="badge bg-success">Hội viên</span>
+                            @else
+                                <span class="badge bg-secondary">Chưa là hội viên</span>
+                            @endif
+                        </td>
+                        <td>{{ $customer->loyaltyProgram->MembershipLevel ?? '-' }}</td>
+                        <td class="fw-semibold text-primary">{{ $customer->loyaltyProgram->Points ?? '0' }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="bi bi-emoji-frown fs-4 d-block mb-2"></i>
+                            Không có khách hàng nào để hiển thị.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
-</x-app-layout>
+</div>
+@endsection
