@@ -1,15 +1,24 @@
 <?php
-
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CartController;
-
+use App\Http\Controllers\CustomerController;
 // Route về trang home
 // Route::get('/', function () {
 //     return view('home'); 
 //});
+
+
+
+Route::middleware('auth')->get('/user/info', [ProfileController::class, 'info'])
+    ->name('user.info');
+
+
+Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -50,7 +59,16 @@ Route::get('/home', [HomeController::class, 'index'])
 ->name('home');
 
 // Trang thông tin user
-Route::get('/user/info', [UserController::class, 'info'])->name('user.info')->middleware('auth');
+//Route::get('/user/info', [UserController::class, 'info'])->name('user.info')->middleware('auth');
+// Redirect đường dẫn cũ /user/info sang route đúng /profile
+//Route::get('/user/info', function () { return redirect()->route('user.info'); });
+// ✅ Route thông tin cá nhân cho đúng URL bạn truy cập
+Route::middleware('auth')->group(function () {
+    Route::get('/user/info', [ProfileController::class, 'info'])->name('user.info');
+});
+
+Route::get('/user/edit', [UserController::class, 'edit'])->name('user.edit')->middleware('auth');
+Route::post('/user/update', [UserController::class, 'update'])->name('user.update')->middleware('auth');
 
 // Trang admin chỉ cho phép admin truy cập
 Route::get('/admin', [AdminController::class, 'index'])->middleware('auth')->name('admin');
