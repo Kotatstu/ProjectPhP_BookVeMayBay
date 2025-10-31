@@ -12,6 +12,11 @@ use App\Models\Flight;
 use App\Models\Aircraft;
 use App\Models\Airline;
 use App\Models\Airport;
+use App\Models\CabinClass;
+use App\Models\Customer;
+use App\Models\Fare;
+use App\Models\PaymentMethod;
+use App\Models\Ticket;
 use Carbon\Carbon;
 
 class AdminController extends BaseController
@@ -20,6 +25,17 @@ class AdminController extends BaseController
     {
         // Bắt buộc phải đăng nhập mới được vào
         $this->middleware('auth');
+    }
+
+    public function listMembers()
+    {
+        $members = [
+            ['name' => 'Nguyễn Hoàng Long', 'mssv' => '2001222438', 'contribution' => '40%'],
+            ['name' => 'Tô Minh Lợi', 'mssv' => '2001222485', 'contribution' => '30%'],
+            ['name' => 'Lê Thái Toàn', 'mssv' => '2001224457', 'contribution' => '30%'],
+        ];
+
+        return view('admin.members', compact('members'));
     }
 
     public function index()
@@ -323,5 +339,103 @@ class AdminController extends BaseController
         return redirect()->route('admin.airports.index')->with('success', 'Xóa sân bay thành công!');
     }
 
+    public function listTickets()
+    {
+        $tickets = Ticket::with([
+            'customer.user',
+            'fare.cabinClass',
+            'paymentMethod'
+        ])->get();
 
+        return view('admin.tickets', compact('tickets'));
+    }
+
+    public function editTicket($id)
+    {
+        $ticket = Ticket::findOrFail($id);
+        $customers = Customer::with('user')->get();
+        $fares = Fare::with('cabinClass')->get();
+        $methods = PaymentMethod::all();
+
+        return view('admin.editTicket', compact('ticket', 'customers', 'fares', 'methods'));
+    }
+
+    public function updateTicket(Request $request, $id)
+    {
+        $ticket = Ticket::findOrFail($id);
+
+        $validated = $request->validate([
+            'CustomerID' => 'required|exists:Customers,CustomerID',
+            'FareID' => 'required|exists:Fares,FareID',
+            'PaymentMethodID' => 'required|exists:PaymentMethods,PaymentMethodID',
+            'TotalAmount' => 'required|numeric|min:0',
+            'Status' => 'required|string|max:50',
+        ]);
+
+        $ticket->update($validated);
+
+        return redirect()->route('admin.tickets.index')->with('success', 'Cập nhật vé thành công!');
+    }
+
+    public function deleteTicket($id)
+    {
+        $ticket = Ticket::findOrFail($id);
+        $ticket->delete();
+
+        return redirect()->route('admin.tickets.index')->with('success', 'Đã xóa vé thành công!');
+    }
+
+    public function listFare()
+    {
+        $fares = Fare::with(['flight.departureAirport', 'flight.arrivalAirport', 'cabinClass'])->get();
+
+        return view('admin.Fares', compact('fares'));
+    }
+
+    public function editFare($id)
+    {
+        $fare = Fare::findOrFail($id);
+        $flights = Flight::all();
+        $classes = CabinClass::all();
+
+        return view('admin.editFare', compact('fare', 'flights', 'classes'));
+    }
+
+    public function updateFare(Request $request, $id)
+    {
+        $fare = Fare::findOrFail($id);
+        $fare->update($request->all());
+
+        return redirect()->route('admin.fares.index')->with('success', 'Cập nhật giá vé thành công!');
+    }
+
+    public function destroyFare($id)
+    {
+        $fare = Fare::findOrFail($id);
+        $fare->delete();
+
+        return redirect()->route('admin.fares.index')->with('success', 'Xóa giá vé thành công!');
+    }
+
+    public function createFare()
+    {
+        $flights = Flight::with(['departureAirport', 'arrivalAirport'])->get();
+        $classes = CabinClass::all();
+
+        return view('admin.createFare', compact('flights', 'classes'));
+    }
+
+    public function storeFare(Request $request)
+    {
+        $request->validate([
+            'FlightID' => 'required|exists:Flights,FlightID',
+            'CabinClassID' => 'required|exists:CabinClasses,CabinClassID',
+            'BasePrice' => 'required|numeric|min:0',
+            'Tax' => 'required|numeric|min:0',
+            'Currency' => 'required|string|max:10',
+        ]);
+
+        Fare::create($request->all());
+        return redirect()->route('admin.fares.index')->with('success', 'Thêm giá vé mới thành công!');
+    }
 }

@@ -11,7 +11,7 @@ class Customer extends Model
 
     protected $table = 'Customers';
     protected $primaryKey = 'CustomerID';
-    public $timestamps = false; // Bạn dùng CreatedAt thủ công
+    public $timestamps = false;
 
     protected $fillable = [
         'UserID', 'Gender', 'DateOfBirth', 'Phone', 'Nationality', 'CreatedAt',

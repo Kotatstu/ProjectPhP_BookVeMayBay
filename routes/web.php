@@ -6,6 +6,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerController;
+use Symfony\Component\Routing\DependencyInjection\RoutingResolverPass;
+
 // Route về trang home
 // Route::get('/', function () {
 //     return view('home'); 
@@ -108,6 +110,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/airports/{id}/edit', [AdminController::class, 'editAirport'])->name('airports.edit');
     Route::put('/airports/{id}', [AdminController::class, 'updateAirport'])->name('airports.update');
     Route::delete('/airports/{id}', [AdminController::class, 'deleteAirport'])->name('airports.destroy');
+
+    //Ticket
+    Route::get('/tickets', [AdminController::class, 'listTickets'])->name('tickets.index');
+    Route::get('/tickets/{id}/edit', [AdminController::class, 'editTicket'])->name('tickets.edit');
+    Route::post('/tickets/{id}/update', [AdminController::class, 'updateTicket'])->name('tickets.update');
+    Route::delete('/tickets/{id}', [AdminController::class, 'deleteTicket'])->name('tickets.delete');
+
+    //Fare
+    Route::get('/fares', [AdminController::class, 'listFare'])->name('fares.index');
+    Route::get('/fares/{id}/edit', [AdminController::class, 'editFare'])->name('fares.edit');
+    Route::put('/fares/{id}', [AdminController::class, 'updateFare'])->name('fares.update');
+    Route::delete('/fares/{id}', [AdminController::class, 'destroyFare'])->name('fares.destroy');
+    Route::get('/fares/create', [AdminController::class, 'createFare'])->name('fares.create');
+    Route::post('/fares', [AdminController::class, 'storeFare'])->name('fares.store');
+
 });
 //Detail
 Route::get('/detail/{id}', [HomeController::class, 'show'])->name('flights.detail');
@@ -124,3 +141,5 @@ Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remov
 // Thanh toán
 Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 Route::post('/cart/checkout-all', [CartController::class, 'checkoutAll'])->name('cart.checkoutAll');
+
+Route::get('/team-members', [AdminController::class, 'listMembers'])->name('members');
