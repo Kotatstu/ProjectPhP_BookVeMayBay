@@ -5,89 +5,76 @@
 <!-- Hero Section with Carousel -->
 <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="8000" data-bs-pause="false">
     <div class="carousel-inner">
-        <div class="carousel-item active">
-            <div class="hero-slide" style="background-image: url('/images/banner_1.jpg');"></div>
-        </div>
-        <div class="carousel-item">
-            <div class="hero-slide" style="background-image: url('/images/banner_2.jpg');"></div>
-        </div>
-        <div class="carousel-item">
-            <div class="hero-slide" style="background-image: url('/images/banner_3.jpg');"></div>
-        </div>
-        <div class="carousel-item">
-            <div class="hero-slide" style="background-image: url('/images/banner_4.jpg');"></div>
-        </div>
-        <div class="carousel-item">
-            <div class="hero-slide" style="background-image: url('/images/banner_5.jpg');"></div>
-        </div>
-        <div class="carousel-item">
-            <div class="hero-slide" style="background-image: url('/images/banner_6.jpg');"></div>
-        </div>
-        <div class="carousel-item">
-            <div class="hero-slide" style="background-image: url('/images/banner_7.jpg');"></div>
-        </div>
-        <div class="carousel-item">
-            <div class="hero-slide" style="background-image: url('/images/banner_8.jpg');"></div>
-        </div>
-        <div class="carousel-item">
-            <div class="hero-slide" style="background-image: url('/images/banner_9.jpg');"></div>
-        </div>
+        @for($i = 1; $i <= 9; $i++)
+            <div class="carousel-item {{ $i === 1 ? 'active' : '' }}">
+                <div class="hero-slide" style="background-image: url('/images/banner_{{ $i }}.jpg');"></div>
+            </div>
+        @endfor
     </div>
 
-<!-- Search -->
-<div class="search-overlay">
-    <div class="search-box">
-        <h4 class="fw-semibold mb-4 text-center">
-        Tìm & đặt vé máy bay giá rẻ
-        </h4>
+    <!-- Search -->
+    <div class="search-overlay">
+        <div class="search-box">
+            <h4 class="fw-semibold mb-4 text-center">Tìm & đặt vé máy bay giá rẻ</h4>
+            <form action="{{ route('flights.search') }}" method="GET">
+                <div class="row g-3 justify-content-center align-items-end">
+                    <div class="col-md-3 col-sm-6">
+                        <label class="form-label">Từ</label>
+                        <input type="text" name="from" class="form-control" placeholder="Thành phố hoặc mã sân bay" value="{{ request('from') }}">
+                    </div>
 
-        <form>
-            <div class="row g-3 justify-content-center align-items-end">
-                <div class="col-md-3 col-sm-6">
-                    <label class="form-label">Từ</label>
-                    <input type="text" class="form-control" placeholder="From...">
-                </div>
+                    <div class="col-md-3 col-sm-6">
+                        <label class="form-label">Đến</label>
+                        <input type="text" name="to" class="form-control" placeholder="Thành phố hoặc mã sân bay" value="{{ request('to') }}">
+                    </div>
 
-                <div class="col-md-3 col-sm-6">
-                    <label class="form-label">Đến</label>
-                    <input type="text" class="form-control" placeholder="To...">
-                </div>
+                    <div class="col-md-3 col-sm-6">
+                        <label class="form-label">Ngày khởi hành</label>
+                        <input type="date" name="date" class="form-control" value="{{ request('date') }}">
+                    </div>
 
-                <div class="col-md-3 col-sm-6">
-                    <label class="form-label">Ngày khởi hành</label>
-                    <input type="date" class="form-control">
+                    <div class="col-md-2 col-sm-6">
+                        <button type="submit" class="btn btn-search w-100">
+                            Tìm chuyến bay
+                        </button>
+                    </div>
                 </div>
+            </form>
 
-                <div class="col-md-2 col-sm-6">
-                    <button type="submit" class="btn btn-search w-100">
-                        Tìm chuyến bay
-                    </button>
-                </div>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
-
 
 
 <!-- Thông tin vé máy bay -->
-<div class="card-container my-3">
-    <h3 class="mb-3 text-left">Vé máy bay nội địa</h3>
-    <div class="card-wrapper d-flex flex-wrap gap-3">
+<div class="container my-5">
+    <h3 class="mb-4 text-left">Vé máy bay nội địa</h3>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
         @foreach($flights as $flight)
-            <a href="{{ route('flights.detail', $flight->id) }}" class="text-decoration-none">
-                <div class="flight-card card shadow-sm" style="width: 18rem;">
-                    <img src="{{ asset($flight->airline_logo) }}" class="card-img-top" alt="{{ $flight->airline_name }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $flight->from_city }} → {{ $flight->to_city }}</h5>
-                        <p class="card-text">Ngày bay: {{ date('d/m/Y H:i', strtotime($flight->departure_time)) }}</p>
-                        <p class="card-text fw-bold text-danger">{{ number_format($flight->fare, 0, ',', '.') }} VND</p>
+            <div class="col">
+                <a href="{{ route('flights.detail', $flight->id ?? $flight->FlightID) }}" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm flight-card">
+                        <img src="{{ asset($flight->airline_logo) }}" class="card-img-top" alt="{{ $flight->airline_name }}">
+                        <div class="card-body">
+                            <h6 class="card-title text-dark fw-bold">
+                                {{ $flight->from_city }} → {{ $flight->to_city }}
+                            </h6>
+                            <p class="card-text text-muted mb-1">
+                                Ngày bay: {{ date('d/m/Y H:i', strtotime($flight->departure_time)) }}
+                            </p>
+                        </div>
                     </div>
-                </div>
-            </a>
+                </a>
+            </div>
         @endforeach
     </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-4">
+        {{ $flights->links('pagination::bootstrap-5') }}
+    </div>
 </div>
+
 @endsection
 
 

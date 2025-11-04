@@ -46,4 +46,9 @@ class Flight extends Model
     {
         return $this->hasMany(Fare::class, 'FlightID', 'FlightID');
     }
+    
+    public function getIdAttribute()
+    {
+        return $this->FlightID;
+    }
 }

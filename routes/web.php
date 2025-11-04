@@ -8,12 +8,6 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CustomerController;
 use Symfony\Component\Routing\DependencyInjection\RoutingResolverPass;
 
-// Route về trang home
-// Route::get('/', function () {
-//     return view('home'); 
-//});
-
-
 
 Route::middleware('auth')->get('/user/info', [ProfileController::class, 'info'])
     ->name('user.info');
@@ -29,7 +23,7 @@ Route::get('/hello', function () {
     return 'Xin chào Laravel!';
 });
 
-// Route gọi lại index (nếu bạn có resources/views/index.blade.php)
+// Route gọi lại index
 Route::get('/index', function () {
     return view('index');
 });
@@ -64,7 +58,7 @@ Route::get('/home', [HomeController::class, 'index'])
 //Route::get('/user/info', [UserController::class, 'info'])->name('user.info')->middleware('auth');
 // Redirect đường dẫn cũ /user/info sang route đúng /profile
 //Route::get('/user/info', function () { return redirect()->route('user.info'); });
-// ✅ Route thông tin cá nhân cho đúng URL bạn truy cập
+// Route thông tin cá nhân cho đúng URL
 Route::middleware('auth')->group(function () {
     Route::get('/user/info', [ProfileController::class, 'info'])->name('user.info');
 });
@@ -143,3 +137,6 @@ Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.c
 Route::post('/cart/checkout-all', [CartController::class, 'checkoutAll'])->name('cart.checkoutAll');
 
 Route::get('/team-members', [AdminController::class, 'listMembers'])->name('members');
+
+//Tìm kiếm chuyến bay trang home
+Route::get('/search', [HomeController::class, 'search'])->name('flights.search');

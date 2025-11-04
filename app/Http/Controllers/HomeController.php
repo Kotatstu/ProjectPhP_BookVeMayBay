@@ -10,28 +10,20 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $minFareSubquery = DB::table('Fares')
-            ->select('FlightID', DB::raw('MIN(BasePrice) as fare'))
-            ->groupBy('FlightID');
-
         $flights = DB::table('Flights')
             ->join('Airlines', 'Flights.AirlineID', '=', 'Airlines.AirlineID')
             ->join('Airports as dep', 'Flights.DepartureAirport', '=', 'dep.AirportCode')
             ->join('Airports as arr', 'Flights.ArrivalAirport', '=', 'arr.AirportCode')
-            ->leftJoinSub($minFareSubquery, 'minfare', function ($join) {
-                $join->on('Flights.FlightID', '=', 'minfare.FlightID');
-            })
             ->select(
                 'Flights.FlightID as id',
                 'Airlines.AirlineName as airline_name',
                 'Airlines.LogoURL as airline_logo',
                 'dep.City as from_city',
                 'arr.City as to_city',
-                'Flights.DepartureTime as departure_time',
-                DB::raw('ISNULL(minfare.fare, 0) as fare')
+                'Flights.DepartureTime as departure_time'
             )
             ->orderBy('Flights.DepartureTime', 'asc')
-            ->get();
+            ->paginate(10); // phân trang 10 bản ghi mỗi trang
 
         return view('home', compact('flights'));
     }
@@ -59,4 +51,50 @@ class HomeController extends Controller
 
         return view('users.detail', compact('flight', 'flightDetail'));
     }
+
+    public function search(Request $request)
+    {
+        $from = $request->input('from');
+        $to = $request->input('to');
+        $date = $request->input('date');
+
+        $flights = DB::table('Flights')
+            ->join('Airlines', 'Flights.AirlineID', '=', 'Airlines.AirlineID')
+            ->join('Airports as dep', 'Flights.DepartureAirport', '=', 'dep.AirportCode')
+            ->join('Airports as arr', 'Flights.ArrivalAirport', '=', 'arr.AirportCode')
+            ->select(
+                'Flights.FlightID as id',
+                'Airlines.AirlineName as airline_name',
+                'Airlines.LogoURL as airline_logo',
+                'dep.City as from_city',
+                'arr.City as to_city',
+                'Flights.DepartureTime as departure_time'
+            )
+            ->when($from, function ($query, $from) {
+                $query->where(function ($q) use ($from) {
+                    $q->where('dep.City', 'LIKE', "%$from%")
+                    ->orWhere('dep.AirportCode', 'LIKE', "%$from%");
+                });
+            })
+            ->when($to, function ($query, $to) {
+                $query->where(function ($q) use ($to) {
+                    $q->where('arr.City', 'LIKE', "%$to%")
+                    ->orWhere('arr.AirportCode', 'LIKE', "%$to%");
+                });
+            })
+            ->when($date, function ($query, $date) {
+                $query->whereDate('Flights.DepartureTime', $date);
+            })
+            ->orderBy('Flights.DepartureTime', 'asc')
+            ->paginate(10)
+            ->appends([
+                'from' => $from,
+                'to' => $to,
+                'date' => $date
+            ]);
+
+        return view('home', compact('flights', 'from', 'to', 'date'));
+    }
+
+
 }
