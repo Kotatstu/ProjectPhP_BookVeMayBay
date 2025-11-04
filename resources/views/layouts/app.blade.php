@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <script src="https://unpkg.com/lucide@latest"></script>
-
 </head>
 
 <body>
@@ -34,20 +33,26 @@
                 @endguest
 
                 @auth
-                 {{-- Nếu là admin thì hiện nút Quản trị --}}
-                @if (Auth::user()->isAdmin())
-                    <a class="btn btn-outline-light btn-sm" href="{{ url('/admin') }}">
-                    <i data-lucide="settings"></i> Quản trị
-                </a>
-                @endif
+                    {{-- Nếu là admin thì hiện nút Quản trị --}}
+                    @if (Auth::user()->isAdmin())
+                        <a class="btn btn-outline-light btn-sm" href="{{ url('/admin') }}">
+                            <i data-lucide="settings"></i> Quản trị
+                        </a>
+                    @endif
 
-                    <div class="user-info">
+                    <div class="user-info text-white">
                         <i data-lucide="user"></i>
                         Xin chào, <strong>{{ Auth::user()->name }}</strong>
                     </div>
-                    
-                     <a class="btn btn-outline-light btn-sm" href="{{ route('user.info') }}">
-                    <i data-lucide="info"></i> Thông tin cá nhân</a>
+
+                    <a class="btn btn-outline-light btn-sm" href="{{ route('user.info') }}">
+                        <i data-lucide="info"></i> Thông tin cá nhân
+                    </a>
+
+                    <a class="btn btn-outline-light btn-sm" href="{{ route('cart.index') }}">
+                        <i data-lucide="bookmark"></i> Vé đã lưu
+                    </a>
+
                     <a class="btn btn-outline-light btn-sm"
                        href="/logout"
                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -61,7 +66,7 @@
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container mt-5 pt-5">
         @yield('content')
     </div>
 
@@ -70,24 +75,22 @@
     </script>
     <script>
     document.addEventListener("DOMContentLoaded", function() {
-    let lastScrollTop = 0;
-    const navbar = document.querySelector(".navbar");
+        let lastScrollTop = 0;
+        const navbar = document.querySelector(".navbar");
 
-    window.addEventListener("scroll", function() {
-        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        window.addEventListener("scroll", function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-        if (scrollTop > lastScrollTop && scrollTop > 50) {
-            // Cuộn xuống → ẩn navbar
-            navbar.classList.add("hidden");
-        } else {
-            // Cuộn lên → hiện navbar
-            navbar.classList.remove("hidden");
-        }
+            if (scrollTop > lastScrollTop && scrollTop > 50) {
+                navbar.classList.add("hidden");
+            } else {
+                navbar.classList.remove("hidden");
+            }
 
-        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        });
     });
-});
-</script>
+    </script>
 
     @stack('scripts')
 </body>
