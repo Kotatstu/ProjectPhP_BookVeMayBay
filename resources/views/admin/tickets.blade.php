@@ -29,13 +29,13 @@
                     <td>{{ $ticket->TicketID }}</td>
                     <td>{{ $ticket->customer->user->name ?? 'Không có dữ liệu' }}</td>
                     <td>{{ $ticket->fare->cabinClass->ClassName ?? 'Không có dữ liệu' }}</td>
-                    <td>{{ $ticket->paymentMethod->Provider ?? 'Không có dữ liệu' }}</td>
+                    <td>{{ $ticket->paymentMethod->PaymentType ?? 'Không có dữ liệu' }}</td>
                     <td>{{ \Carbon\Carbon::parse($ticket->BookingDate)->format('d/m/Y H:i') }}</td>
                     <td>{{ number_format($ticket->TotalAmount, 2) }} VNĐ</td>
                     <td>
-                        <span class="badge 
-                            @if($ticket->Status == 'Đã thanh toán') bg-success 
-                            @elseif($ticket->Status == 'Chờ thanh toán') bg-warning 
+                        <span class="badge
+                            @if($ticket->Status == 'Đã thanh toán') bg-success
+                            @elseif($ticket->Status == 'Chờ thanh toán') bg-warning
                             @else bg-secondary @endif">
                             {{ $ticket->Status }}
                         </span>

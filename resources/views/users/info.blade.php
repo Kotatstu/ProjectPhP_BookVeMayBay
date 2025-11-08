@@ -7,12 +7,14 @@
         justify-content: center;
         align-items: center;
         min-height: 100vh;
+        background-color: #f8f9fa;
     }
 
     .user-info-card {
         width: 70%;
         max-width: 950px;
         border-radius: 20px;
+        background: white;
     }
 
     .btn-custom {
@@ -55,10 +57,16 @@
                 {{-- THÔNG TIN CÁ NHÂN --}}
                 <div class="col-md-6">
                     <div class="p-3 bg-light rounded-3 border">
-                        <h5 class="text-primary"><i data-lucide="id-card" class="me-2"></i>Thông tin cá nhân</h5>
+                        <h5 class="text-primary">
+                            <i data-lucide="id-card" class="me-2"></i>Thông tin cá nhân
+                        </h5>
                         <hr>
-                        <p><strong>Họ và tên:</strong> <span class="text-muted">{{ $user->name }}</span></p>
-                        <p><strong>Email:</strong> <span class="text-muted">{{ $user->email }}</span></p>
+                        <p><strong>Họ và tên:</strong>
+                            <span class="text-muted">{{ $user->name }}</span>
+                        </p>
+                        <p><strong>Email:</strong>
+                            <span class="text-muted">{{ $user->email }}</span>
+                        </p>
                         <p><strong>Số điện thoại:</strong>
                             <span class="text-muted">{{ optional($customer)->Phone ?? 'Chưa cập nhật' }}</span>
                         </p>
@@ -77,21 +85,44 @@
                         <p><strong>Quốc tịch:</strong>
                             <span class="text-muted">{{ optional($customer)->Nationality ?? 'Chưa cập nhật' }}</span>
                         </p>
+
+                        {{-- 🔹 PHƯƠNG THỨC THANH TOÁN --}}
+                        <p><strong>Phương thức thanh toán:</strong>
+                            <span class="text-muted">
+                                @if(isset($payment) && $payment)
+                                    {{ $payment->PaymentType ?? 'Không rõ' }} -
+                                    {{ $payment->Provider ?? 'Không rõ' }}
+                                    ({{ $payment->AccountNumber ?? '---' }})
+                                @else
+                                    Chưa cập nhật
+                                @endif
+                            </span>
+                        </p>
                     </div>
                 </div>
 
                 {{-- THÔNG TIN TÀI KHOẢN --}}
                 <div class="col-md-6">
                     <div class="p-3 bg-light rounded-3 border">
-                        <h5 class="text-primary"><i data-lucide="info" class="me-2"></i>Thông tin tài khoản</h5>
+                        <h5 class="text-primary">
+                            <i data-lucide="info" class="me-2"></i>Thông tin tài khoản
+                        </h5>
                         <hr>
-                        <p><strong>ID người dùng:</strong> <span class="text-muted">{{ $user->id }}</span></p>
+                        <p><strong>ID người dùng:</strong>
+                            <span class="text-muted">{{ $user->id }}</span>
+                        </p>
                         <p><strong>Ngày tạo tài khoản:</strong>
-                            <span class="text-muted">{{ $user->created_at->format('d/m/Y H:i') }}</span>
+                            <span class="text-muted">
+                                @if($user->created_at)
+                                    {{ $user->created_at->format('d/m/Y H:i') }}
+                                @else
+                                    Không xác định
+                                @endif
+                            </span>
                         </p>
 
                         <p><strong>Hội viên:</strong>
-                            @if(isset($loyalty))
+                            @if(isset($loyalty) && $loyalty)
                                 <span class="badge bg-success">{{ $loyalty->MembershipLevel }}</span><br>
                                 <strong>Điểm tích lũy:</strong>
                                 <span class="text-primary fw-bold">{{ $loyalty->Points }}</span>
@@ -103,17 +134,20 @@
                 </div>
             </div>
 
+            {{-- NÚT HÀNH ĐỘNG --}}
             <div class="text-center mt-4">
                 <a href="{{ url('/home') }}" class="btn btn-custom btn-return me-3">
-                <i data-lucide="arrow-left"></i> Quay lại trang chủ
-            </a>
+                    <i data-lucide="arrow-left"></i> Quay lại trang chủ
+                </a>
                 <a href="{{ route('user.edit') }}" class="btn btn-custom btn-update">
-                <i data-lucide="edit"></i> Cập nhật thông tin
-            </a>
-        </div>
+                    <i data-lucide="edit"></i> Cập nhật thông tin
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
-<script>lucide.createIcons();</script>
+<script>
+    lucide.createIcons();
+</script>
 @endsection
