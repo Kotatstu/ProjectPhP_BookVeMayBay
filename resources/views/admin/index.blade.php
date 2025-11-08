@@ -57,10 +57,17 @@
             };
             </script>
         </div>
-        <div class="col">
+        <div id="btnThongKe" class="col">
             <button class="btn btn-secondary w-100 py-4" onclick="window.location.href=''">
                 <i class="bi bi-bar-chart-line fs-2"></i><br> Báo cáo thống kê
             </button>
+
+            <script>
+            document.getElementById('btnThongKe').onclick = function() {
+                window.location.href = "{{ route('admin.revenue') }}";
+            };
+            </script>
+
         </div>
         <div class="col">
             <button id="btnMembers" class="btn btn-danger w-100 py-4" onclick="window.location.href=''">

@@ -438,4 +438,44 @@ class AdminController extends BaseController
         Fare::create($request->all());
         return redirect()->route('admin.fares.index')->with('success', 'Thêm giá vé mới thành công!');
     }
+
+    public function revenue()
+    {
+        // Doanh thu theo tháng
+        $revenueByMonth = Ticket::select(
+                DB::raw('MONTH(BookingDate) as month'),
+                DB::raw('YEAR(BookingDate) as year'),
+                DB::raw('SUM(TotalAmount) as total_revenue')
+            )
+            ->groupBy(DB::raw('YEAR(BookingDate), MONTH(BookingDate)'))
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get();
+
+        // Doanh thu theo hãng hàng không
+        $revenueByAirline = Ticket::join('Fares', 'Tickets.FareID', '=', 'Fares.FareID')
+            ->join('Flights', 'Fares.FlightID', '=', 'Flights.FlightID')
+            ->join('Airlines', 'Flights.AirlineID', '=', 'Airlines.AirlineID')
+            ->select(
+                'Airlines.AirlineName',
+                DB::raw('SUM(Tickets.TotalAmount) as total_revenue')
+            )
+            ->groupBy('Airlines.AirlineName')
+            ->orderByDesc('total_revenue')
+            ->get();
+
+        // Doanh thu theo hạng vé
+        $revenueByCabin = Ticket::join('Fares', 'Tickets.FareID', '=', 'Fares.FareID')
+            ->join('CabinClasses', 'Fares.CabinClassID', '=', 'CabinClasses.CabinClassID')
+            ->select(
+                'CabinClasses.ClassName',
+                DB::raw('SUM(Tickets.TotalAmount) as total_revenue')
+            )
+            ->groupBy('CabinClasses.ClassName')
+            ->orderByDesc('total_revenue')
+            ->get();
+
+        return view('admin.revenue', compact('revenueByMonth', 'revenueByAirline', 'revenueByCabin'));
+    }
+
 }

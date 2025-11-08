@@ -119,6 +119,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/fares/create', [AdminController::class, 'createFare'])->name('fares.create');
     Route::post('/fares', [AdminController::class, 'storeFare'])->name('fares.store');
 
+    //Revenue
+    Route::get('/revenue', [AdminController::class, 'revenue'])->name('revenue');
 });
 //Detail
 Route::get('/detail/{id}', [HomeController::class, 'show'])->name('flights.detail');
@@ -140,3 +142,4 @@ Route::get('/team-members', [AdminController::class, 'listMembers'])->name('memb
 
 //Tìm kiếm chuyến bay trang home
 Route::get('/search', [HomeController::class, 'search'])->name('flights.search');
+
