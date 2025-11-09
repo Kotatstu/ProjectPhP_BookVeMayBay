@@ -185,10 +185,10 @@ class CartController extends Controller
     public function cancel($ticketId)
     {
         $ticket = Ticket::findOrFail($ticketId);
-        $ticket->Status = 'Chờ thanh toán';
+        $ticket->Status = 'Đã huỷ';
         $ticket->save();
 
-        return redirect()->route('cart.index')->with('success', 'Vé đã được chuyển về chờ thanh toán.');
+        return redirect()->route('cart.index')->with('success', 'Vé đã được huỷ.');
     }
 
     public function edit($ticketId)
