@@ -1,13 +1,124 @@
+/* ================== Container ================== */
 .cart-container {
-    padding-top: 120px;
-    margin-bottom: 60px;
+    padding: 60px 20px;
+    background: linear-gradient(135deg, #f5f7fa, #e4ebf7);
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
 }
 
-.cart-table th, .cart-table td {
-    vertical-align: middle;
+/* ================== Table ================== */
+.cart-table {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
+.cart-table thead {
+    background: linear-gradient(90deg, #1a73e8, #1558b0);
+    color: #fff;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.cart-table tbody tr {
+    transition: all 0.3s ease;
+}
+
+.cart-table tbody tr:hover {
+    background: rgba(26, 115, 232, 0.08);
+    transform: translateX(3px);
+}
+
+.cart-table th,
+.cart-table td {
+    padding: 12px 8px;
+    vertical-align: middle !important;
+}
+
+/* Logo hãng */
 .cart-logo {
-    width: 80px;
-    height: auto;
+    max-height: 50px;
+    object-fit: contain;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.cart-logo:hover {
+    transform: scale(1.1);
+}
+
+/* ================== Buttons ================== */
+.cart-btn {
+    background: linear-gradient(135deg, #007bff, #0056d2);
+    border: none;
+    color: white;
+    height: 48px;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.35);
+}
+
+.cart-btn:hover {
+    background: linear-gradient(135deg, #0056d2, #003c99);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 91, 187, 0.45);
+    color: black;
+}
+
+/* Button trạng thái khác nhau */
+.cart-btn-primary {
+    background: linear-gradient(135deg, #1a73e8, #1558b0);
+}
+.cart-btn-success {
+    background: linear-gradient(135deg, #198754, #146c43);
+}
+.cart-btn-warning {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    color: #212529;
+}
+.cart-btn-danger {
+    background: linear-gradient(135deg, #dc3545, #a71d2a);
+}
+
+/* Khoảng cách button trong cell */
+.cart-table td form {
+    display: inline-block;
+    margin: 2px;
+}
+
+/* ================== Heading ================== */
+.cart-container h3,
+.cart-container h5 {
+    font-weight: 700;
+}
+
+/* Tổng tiền */
+.cart-total {
+    margin-top: 30px;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+/* ================== Responsive ================== */
+@media (max-width: 992px) {
+    .cart-table th, .cart-table td {
+        font-size: 0.9rem;
+    }
+    .cart-logo {
+        max-height: 40px;
+    }
+    .cart-btn {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .cart-btn {
+        display: block;
+        width: 100%;
+        margin-bottom: 6px;
+    }
 }

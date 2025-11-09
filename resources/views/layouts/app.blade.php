@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +17,8 @@
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ url('/') }}" class="d-flex align-items-center gap-2 text-decoration-none" aria-label="Về trang chủ">
+                <a href="{{ url('/') }}" class="d-flex align-items-center gap-2 text-decoration-none"
+                    aria-label="Về trang chủ">
                     <i data-lucide="plane" class="text-white"></i>
                     <span class="fw-semibold text-white">Book Vé máy Bay</span>
                 </a>
@@ -53,9 +55,8 @@
                         <i data-lucide="bookmark"></i> Vé đã lưu
                     </a>
 
-                    <a class="btn btn-outline-light btn-sm"
-                    href="/logout"
-                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <a class="btn btn-outline-light btn-sm" href="/logout"
+                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i data-lucide="log-out"></i> Đăng xuất
                     </a>
                     <form id="logout-form" action="/logout" method="POST" class="d-none">
@@ -66,6 +67,48 @@
         </div>
     </nav>
 
+    <!-- Toast container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        @if (session('success'))
+            <div class="toast toast-success align-items-center border-0 show" role="alert" aria-live="assertive"
+                aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        {{ session('success') }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="toast toast-error align-items-center border-0 show" role="alert" aria-live="assertive"
+                aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        {{ session('error') }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>
+        @endif
+
+        @if (session('info'))
+            <div class="toast toast-info align-items-center border-0 show" role="alert" aria-live="assertive"
+                aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        {{ session('info') }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+            </div>
+        @endif
+    </div>
+
     <div class="container mt-5 pt-5">
         @yield('content')
     </div>
@@ -74,22 +117,42 @@
         lucide.createIcons();
     </script>
     <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let lastScrollTop = 0;
-        const navbar = document.querySelector(".navbar");
+        document.addEventListener("DOMContentLoaded", function() {
+            let lastScrollTop = 0;
+            const navbar = document.querySelector(".navbar");
 
-        window.addEventListener("scroll", function() {
-            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            window.addEventListener("scroll", function() {
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-            if (scrollTop > lastScrollTop && scrollTop > 50) {
-                navbar.classList.add("hidden");
-            } else {
-                navbar.classList.remove("hidden");
-            }
+                if (scrollTop > lastScrollTop && scrollTop > 50) {
+                    navbar.classList.add("hidden");
+                } else {
+                    navbar.classList.remove("hidden");
+                }
 
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+            });
         });
-    });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const toasts = document.querySelectorAll(".toast");
+
+            toasts.forEach(toast => {
+                // Hiệu ứng xuất hiện
+                setTimeout(() => toast.classList.add("show"), 100);
+
+                // Tự ẩn sau 5 giây
+                setTimeout(() => {
+                    toast.classList.remove("show");
+                    toast.classList.add("hide");
+
+                    // Xoá khỏi DOM sau khi animation kết thúc
+                    setTimeout(() => toast.remove(), 500);
+                }, 5000);
+            });
+        });
     </script>
 
     @stack('scripts')

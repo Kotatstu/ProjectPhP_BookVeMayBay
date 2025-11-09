@@ -1,0 +1,125 @@
+/* ================== checkout.css ================== */
+
+/* ================== Container ================== */
+.checkout-container {
+    padding: 60px 20px;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa, #e4ebf7);
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ================== Header ================== */
+.checkout-container h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a73e8;
+    margin-bottom: 40px;
+}
+
+/* ================== Card / Box ================== */
+.checkout-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.checkout-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.12);
+}
+
+/* ================== Section Titles ================== */
+.checkout-section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1a73e8;
+    margin-bottom: 15px;
+}
+
+.checkout-section-title i {
+    margin-right: 8px;
+    color: #1a73e8;
+}
+
+/* ================== Info Paragraphs ================== */
+.checkout-info p {
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+
+.checkout-info strong {
+    color: #495057;
+}
+
+/* ================== Ticket Info ================== */
+.checkout-ticket img {
+    max-height: 50px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+/* ================== Form Elements ================== */
+.checkout-form label {
+    font-weight: 600;
+    color: #212529;
+}
+
+.checkout-form select,
+.checkout-form input {
+    border-radius: 0.75rem;
+    border: 1px solid #ced4da;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.checkout-form select:focus,
+.checkout-form input:focus {
+    border-color: #1a73e8;
+    box-shadow: 0 0 10px rgba(26, 115, 232, 0.25);
+    outline: none;
+}
+
+/* ================== Buttons ================== */
+.checkout-btn {
+    background: linear-gradient(135deg, #007bff, #0056d2);
+    border: none;
+    color: white;
+    height: 48px;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.35);
+    cursor: pointer;
+}
+
+.checkout-btn:hover {
+    background: linear-gradient(135deg, #0056d2, #003c99);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 91, 187, 0.45);
+    color: black;
+}
+
+/* ================== Responsive ================== */
+@media (max-width: 992px) {
+    .checkout-container h3 {
+        font-size: 1.7rem;
+    }
+    .checkout-section-title {
+        font-size: 1.15rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .checkout-card {
+        padding: 20px;
+    }
+    .checkout-btn {
+        font-size: 0.95rem;
+        padding: 10px;
+    }
+}

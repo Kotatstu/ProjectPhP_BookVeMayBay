@@ -30,4 +30,9 @@ class Fare extends Model
     {
         return $this->belongsTo(CabinClass::class, 'CabinClassID', 'CabinClassID');
     }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'FareID', 'FareID');
+    }
 }
