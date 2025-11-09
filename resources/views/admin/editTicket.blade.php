@@ -9,6 +9,7 @@
     <form action="{{ route('admin.tickets.update', $ticket->TicketID) }}" method="POST">
         @csrf
 
+        {{-- Khách hàng --}}
         <div class="mb-3">
             <label class="form-label">Khách hàng</label>
             <select name="CustomerID" class="form-select" required>
@@ -20,6 +21,7 @@
             </select>
         </div>
 
+        {{-- Hạng ghế --}}
         <div class="mb-3">
             <label class="form-label">Hạng ghế</label>
             <select name="FareID" class="form-select" required>
@@ -31,22 +33,25 @@
             </select>
         </div>
 
+
+        {{-- Phương thức thanh toán (3 lựa chọn cố định) --}}
         <div class="mb-3">
             <label class="form-label">Phương thức thanh toán</label>
             <select name="PaymentMethodID" class="form-select" required>
-                @foreach($methods as $m)
-                    <option value="{{ $m->PaymentMethodID }}" {{ $ticket->PaymentMethodID == $m->PaymentMethodID ? 'selected' : '' }}>
-                        {{ $m->Provider }}
-                    </option>
-                @endforeach
+                <option value="5" {{ $ticket->PaymentMethodID == 5 ? 'selected' : '' }}>Credit Card</option>
+                <option value="6" {{ $ticket->PaymentMethodID == 6 ? 'selected' : '' }}>Debit Card</option>
+                <option value="7" {{ $ticket->PaymentMethodID == 7 ? 'selected' : '' }}>E-wallet</option>
             </select>
         </div>
 
+
+        {{-- Tổng tiền --}}
         <div class="mb-3">
             <label class="form-label">Tổng tiền</label>
             <input type="number" name="TotalAmount" class="form-control" value="{{ $ticket->TotalAmount }}" required>
         </div>
 
+        {{-- Trạng thái --}}
         <div class="mb-3">
             <label class="form-label">Trạng thái</label>
             <select name="Status" class="form-select">
@@ -56,6 +61,7 @@
             </select>
         </div>
 
+        {{-- Nút hành động --}}
         <button type="submit" class="btn btn-success">Lưu thay đổi</button>
         <a href="{{ route('admin.tickets.index') }}" class="btn btn-secondary">Quay lại</a>
     </form>

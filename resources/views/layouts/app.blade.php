@@ -62,7 +62,7 @@
                     <form id="logout-form" action="/logout" method="POST" class="d-none">
                         @csrf
                     </form>
-                @endauth
+                    @endauth
             </div>
         </div>
     </nav>
@@ -157,5 +157,4 @@
 
     @stack('scripts')
 </body>
-
 </html>

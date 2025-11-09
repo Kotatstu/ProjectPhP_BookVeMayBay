@@ -59,9 +59,10 @@ Route::get('/home', [HomeController::class, 'index'])
 // Redirect đường dẫn cũ /user/info sang route đúng /profile
 //Route::get('/user/info', function () { return redirect()->route('user.info'); });
 // Route thông tin cá nhân cho đúng URL
-Route::middleware('auth')->group(function () {
-    Route::get('/user/info', [ProfileController::class, 'info'])->name('user.info');
-});
+Route::get('/user/info', [UserController::class, 'info'])
+    ->name('user.info')
+    ->middleware('auth');
+
 
 Route::get('/user/edit', [UserController::class, 'edit'])->name('user.edit')->middleware('auth');
 Route::post('/user/update', [UserController::class, 'update'])->name('user.update')->middleware('auth');

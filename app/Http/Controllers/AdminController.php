@@ -367,7 +367,7 @@ class AdminController extends BaseController
         $validated = $request->validate([
             'CustomerID' => 'required|exists:Customers,CustomerID',
             'FareID' => 'required|exists:Fares,FareID',
-            'PaymentMethodID' => 'required|exists:PaymentMethods,PaymentMethodID',
+            'PaymentMethodID' => 'required|integer',
             'TotalAmount' => 'required|numeric|min:0',
             'Status' => 'required|string|max:50',
         ]);
@@ -438,7 +438,6 @@ class AdminController extends BaseController
         Fare::create($request->all());
         return redirect()->route('admin.fares.index')->with('success', 'Thêm giá vé mới thành công!');
     }
-
     public function revenue()
     {
         // Doanh thu theo tháng
@@ -477,5 +476,4 @@ class AdminController extends BaseController
 
         return view('admin.revenue', compact('revenueByMonth', 'revenueByAirline', 'revenueByCabin'));
     }
-
 }

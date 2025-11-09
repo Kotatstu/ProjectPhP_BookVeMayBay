@@ -11,6 +11,7 @@ class PaymentMethod extends Model
 
     protected $table = 'PaymentMethods';
     protected $primaryKey = 'PaymentMethodID';
+    public $timestamps = false; // Thêm dòng này
 
     protected $fillable = [
         'CustomerID', 'PaymentType', 'Provider', 'AccountNumber', 'ExpiryDate',
