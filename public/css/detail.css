@@ -1,42 +1,147 @@
-.flight-detail-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: transparent;
+/* ================== Container & Card ================== */
+.detail-container {
+    background: linear-gradient(135deg, #f0f4ff, #e2ebfa);
+    padding: 60px 20px;
+    min-height: 100vh;
 }
 
-.flight-detail-card {
-    max-width: 900px;
-    width: 100%;
-    background-color: transparent;
-    border-radius: 20px;
-    overflow: hidden;
+.detail-card {
+    background: #fff;
+    border-radius: 2rem;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.08);
+    padding: 50px;
+    transition: all 0.4s ease;
 }
 
-.flight-info {
+.detail-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+}
+
+/* ================== Thông tin chuyến bay ================== */
+.detail-flight-info {
+    font-family: 'Poppins', sans-serif;
+}
+
+.detail-flight-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a73e8;
+}
+
+.detail-flight-date,
+.detail-flight-time,
+.detail-flight-airline {
     font-size: 1rem;
-    color: #333;
-    background-color: transparent;
+    color: #495057;
+    margin-bottom: 6px;
 }
 
-
-.flight-info i {
-    color: #007bff;
+.detail-flight-info i {
+    color: #1a73e8;
+    font-size: 1.2rem;
+    margin-right: 8px;
 }
 
-.btn-book {
-    background-color: #007bff;
+.detail-airline-logo {
+    max-height: 110px;
+    object-fit: contain;
+    border-radius: 14px;
+    transition: transform 0.3s ease;
+}
+
+.detail-airline-logo:hover {
+    transform: scale(1.15);
+}
+
+/* ================== Bảng hạng vé ================== */
+.detail-fare-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1a73e8;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.detail-fare-table {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.05);
+}
+
+.detail-fare-table thead {
+    background: linear-gradient(90deg, #1a73e8, #1558b0);
+    color: #fff;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.detail-fare-table tbody tr {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.detail-fare-table tbody tr:hover {
+    background: rgba(26,115,232,0.1);
+    transform: translateX(5px);
+}
+
+.detail-fare-table td,
+.detail-fare-table th {
+    vertical-align: middle !important;
+    padding: 14px 10px;
+}
+
+/* ================== Form chọn hạng vé ================== */
+.detail-fare-form .detail-label {
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 6px;
+}
+
+.detail-fare-form .detail-select {
+    border-radius: 1rem;
+    padding: 12px 16px;
+    border: 1px solid #ced4da;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.detail-fare-form .detail-select:focus {
+    border-color: #1a73e8;
+    box-shadow: 0 0 12px rgba(26,115,232,0.25);
+    outline: none;
+}
+
+/* ================== Button ================== */
+.detail-btn {
+    background: linear-gradient(135deg, #007bff, #0056d2);
     border: none;
     color: white;
-    padding: 10px 30px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.5s ease;
+    height: 48px;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.35);
 }
 
-.btn-book:hover {
-    background-color: #0000FF;
-    transform: scale(1.05);
-    color: white;
+.detail-btn:hover {
+    background: linear-gradient(135deg, #0056d2, #003c99);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 91, 187, 0.45);
+    color: black;
 }
+
+/* ================== Responsive ================== */
+@media (max-width: 992px) {
+    .detail-flight-title { font-size: 1.7rem; }
+    .detail-fare-table thead { font-size: 0.9rem; }
+}
+
+@media (max-width: 768px) {
+    .detail-flight-title { font-size: 1.5rem; }
+    .detail-fare-form .detail-select { font-size: 0.9rem; }
+    .detail-btn { width: 100%; padding: 14px; }
+}
+

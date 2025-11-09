@@ -14,6 +14,8 @@ class Ticket extends Model
         'CustomerID',
         'FlightID',
         'FareID',
+        'SeatID',
+        'CabinClassID',
         'PaymentMethodID',
         'BookingDate',
         'TotalAmount',
@@ -28,6 +30,16 @@ class Ticket extends Model
     public function fare()
     {
         return $this->belongsTo(Fare::class, 'FareID', 'FareID');
+    }
+    
+    public function flight()
+    {
+        return $this->belongsTo(Flight::class, 'FlightID', 'FlightID');
+    }
+
+    public function seat()
+    {
+        return $this->belongsTo(Seat::class, 'SeatID', 'SeatID');
     }
 
     public function paymentMethod()
@@ -50,13 +62,6 @@ class Ticket extends Model
 
     public function cabinClass()
     {
-        return $this->hasOneThrough(
-            CabinClass::class,
-            Fare::class,
-            'FareID',       // Foreign key on Fares
-            'CabinClassID', // Foreign key on CabinClasses
-            'FareID',       // Local key on Tickets
-            'CabinClassID'  // Local key on Fares
-        );
+         return $this->belongsTo(CabinClass::class, 'CabinClassID', 'CabinClassID');
     }
 }

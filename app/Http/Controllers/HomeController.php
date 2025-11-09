@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Flight;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -28,7 +29,7 @@ class HomeController extends Controller
         return view('home', compact('flights'));
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $flight = Flight::with(['airline', 'departureAirport', 'arrivalAirport', 'fares.cabinClass'])
             ->findOrFail($id);
@@ -49,7 +50,47 @@ class HomeController extends Controller
             'fare' => $minFare ?? 0,
         ];
 
-        return view('users.detail', compact('flight', 'flightDetail'));
+        // Lấy hạng vé đã chọn (mặc định hạng vé đầu tiên)
+        $selectedFareId = $request->input('fare_id');
+        $selectedFare = $selectedFareId
+            ? $flight->fares->where('FareID', $selectedFareId)->first()
+            : $flight->fares->first();
+
+        // Lấy ghế trống theo hạng vé
+        $availableSeats = $selectedFare
+            ? DB::table('Seats as s')
+            ->leftJoin('SeatAvailability as sa', function ($join) use ($flight) {
+                $join->on('s.SeatID', '=', 'sa.SeatID')
+                    ->where('sa.FlightID', '=', $flight->FlightID);
+            })
+            ->where('s.AircraftID', $flight->AircraftID)
+            ->where('s.CabinClassID', $selectedFare->CabinClassID)
+            ->where(function ($query) {
+                $query->where('sa.IsBooked', 0)
+                    ->orWhereNull('sa.IsBooked');  // ghế chưa có record -> coi là trống
+            })
+            ->select('s.SeatID', 's.SeatNumber')
+            ->get()
+            : collect();
+            
+        $selectedSeat = $availableSeats->first();
+
+        // Phương thức thanh toán của user (nếu đã đăng nhập)
+        $user = Auth::user();
+        $paymentMethods = collect();
+        $customerId = null;
+        if ($user) {
+            // Lấy CustomerID từ bảng Customers
+            $customerId = DB::table('Customers')->where('UserID', $user->id)->value('CustomerID');
+
+            if ($customerId) {
+                $paymentMethods = DB::table('PaymentMethods')
+                    ->where('CustomerID', $customerId)
+                    ->get();
+            }
+        }
+
+        return view('users.detail', compact('flight', 'flightDetail', 'availableSeats', 'paymentMethods', 'selectedFare', 'customerId', 'selectedSeat'));
     }
 
     public function search(Request $request)
@@ -73,13 +114,13 @@ class HomeController extends Controller
             ->when($from, function ($query, $from) {
                 $query->where(function ($q) use ($from) {
                     $q->where('dep.City', 'LIKE', "%$from%")
-                    ->orWhere('dep.AirportCode', 'LIKE', "%$from%");
+                        ->orWhere('dep.AirportCode', 'LIKE', "%$from%");
                 });
             })
             ->when($to, function ($query, $to) {
                 $query->where(function ($q) use ($to) {
                     $q->where('arr.City', 'LIKE', "%$to%")
-                    ->orWhere('arr.AirportCode', 'LIKE', "%$to%");
+                        ->orWhere('arr.AirportCode', 'LIKE', "%$to%");
                 });
             })
             ->when($date, function ($query, $date) {
@@ -95,6 +136,4 @@ class HomeController extends Controller
 
         return view('home', compact('flights', 'from', 'to', 'date'));
     }
-
-
 }
