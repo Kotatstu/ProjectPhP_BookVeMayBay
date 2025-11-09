@@ -54,14 +54,14 @@
                     </a>
 
                     <a class="btn btn-outline-light btn-sm"
-                       href="/logout"
-                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    href="/logout"
+                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i data-lucide="log-out"></i> Đăng xuất
                     </a>
                     <form id="logout-form" action="/logout" method="POST" class="d-none">
                         @csrf
                     </form>
-                @endauth
+                    @endauth
             </div>
         </div>
     </nav>

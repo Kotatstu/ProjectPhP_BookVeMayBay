@@ -1,104 +1,118 @@
 @extends('layouts.admin')
 
-@section('title', 'Bảng điều khiển')
+@section('title', 'Bảng điều khiển quản trị')
 
 @section('content')
-<div class="container">
-    <h2 class="mb-4 text-center">Bảng điều khiển quản trị</h2>
+<div class="admin-dashboard py-5">
+    <div class="container">
 
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-
-        <div class="col">
-            <button id="btnUsers" class="btn btn-primary w-100 py-4">
-                <i class="bi bi-people fs-2"></i><br> Quản lý người dùng
-            </button>
-
-            <!--Khắc chế bệnh ngu của javascript khi dùng blade-->
-            <script>
-            document.getElementById('btnUsers').onclick = function() {
-                window.location.href = "{{ route('admin.users') }}";
-            };
-            </script>
-
-        </div>
-        <div class="col">
-            <button id="btnFlights" class="btn btn-success w-100 py-4" onclick="window.location.href=''">
-                <i class="bi bi-airplane fs-2"></i><br> Quản lý chuyến bay
-            </button>
-
-            <script>
-            document.getElementById('btnFlights').onclick = function() {
-                window.location.href = "{{ route('admin.flights') }}";
-            };
-            </script>
-
-        </div>
-        <div class="col">
-            <button id="btnTickets" class="btn btn-warning w-100 py-4" onclick="window.location.href=''">
-                <i class="bi bi-ticket-detailed fs-2"></i><br> Quản lý vé
-            </button>
-
-            <script>
-            document.getElementById('btnTickets').onclick = function() {
-                window.location.href = "{{ route('admin.tickets.index') }}";
-            };
-            </script>
-        </div>
-        
-
-        <div class="col">
-            <button id="btnPayment" class="btn btn-info w-100 py-4" onclick="window.location.href=''">
-                <i class="bi bi-cash-coin fs-2"></i><br> Quản lý thanh toán
-            </button>
-
-            <script>
-            document.getElementById('btnPayment').onclick = function() {
-                window.location.href = "{{ route('admin.fares.index') }}";
-            };
-            </script>
-        </div>
-        <div id="btnThongKe" class="col">
-            <button class="btn btn-secondary w-100 py-4" onclick="window.location.href=''">
-                <i class="bi bi-bar-chart-line fs-2"></i><br> Báo cáo thống kê
-            </button>
-
-            <script>
-            document.getElementById('btnThongKe').onclick = function() {
-                window.location.href = "{{ route('admin.revenue') }}";
-            };
-            </script>
-
-        </div>
-        <div class="col">
-            <button id="btnMembers" class="btn btn-danger w-100 py-4" onclick="window.location.href=''">
-                <i class="bi bi-gear fs-2"></i><br> Thành viên nhóm
-            </button>
-
-            <script>
-            document.getElementById('btnMembers').onclick = function() {
-                window.location.href = "{{ route('members') }}";
-            };
-            </script>
+        <div class="text-center mb-5">
+            <h1 class="fw-bold text-dark mb-2 display-5">🎯 Bảng điều khiển quản trị</h1>
+            <p class="text-muted fs-5">Theo dõi và quản lý toàn bộ hệ thống đặt vé máy bay</p>
         </div>
 
-        <div class="col"></div> 
-        <div class="col">
-            <button id="btnProfile" class="btn btn-outline-success w-100 py-4" onclick="window.location.href=''">
-                <i class="bi bi-person-badge fs-2"></i><br> Hồ sơ người dùng
-            </button>
+        <div class="row g-4 justify-content-center">
 
-            <script>
-            document.getElementById('btnProfile').onclick = function() {
-                window.location.href = "{{ route('user.info') }}";
-            };
-            </script>
+            @php
+    $cards = [
+        ['icon' => 'users', 'title' => 'Người dùng', 'desc' => 'Quản lý danh sách và quyền truy cập', 'color' => 'primary', 'route' => 'admin.users'],
+        ['icon' => 'plane', 'title' => 'Chuyến bay', 'desc' => 'Theo dõi và cập nhật lộ trình', 'color' => 'success', 'route' => 'admin.flights'],
+        ['icon' => 'ticket', 'title' => 'Vé', 'desc' => 'Quản lý thông tin đặt chỗ và mã vé', 'color' => 'warning', 'route' => 'admin.tickets.index'],
+        ['icon' => 'credit-card', 'title' => 'Thanh toán', 'desc' => 'Kiểm soát và đối soát giao dịch', 'color' => 'info', 'route' => 'admin.fares.index'],
+        ['icon' => 'bar-chart-3', 'title' => 'Báo cáo', 'desc' => 'Phân tích dữ liệu và biểu đồ thống kê', 'color' => 'secondary', 'route' => 'admin.revenue'],
+        ['icon' => 'users-round', 'title' => 'Thành viên nhóm', 'desc' => 'Thông tin & vai trò trong dự án', 'color' => 'danger', 'route' => 'members'],
+        ['icon' => 'user', 'title' => 'Hồ sơ', 'desc' => 'Cập nhật và chỉnh sửa thông tin cá nhân', 'color' => 'dark', 'route' => 'user.info']
+    ];
+@endphp
+
+
+            @foreach ($cards as $card)
+                <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                    <div class="dashboard-card card-glass bg-gradient-{{ $card['color'] }}">
+                        <div class="card-inner text-center text-white">
+                            <div class="icon-wrapper mb-3">
+                                <i data-lucide="{{ $card['icon'] }}" class="lucide-icon"></i>
+                            </div>
+                            <h5 class="fw-bold">{{ $card['title'] }}</h5>
+                            <p class="opacity-75 small mb-3">{{ $card['desc'] }}</p>
+
+                            @if ($card['route'])
+                                <a href="{{ route($card['route']) }}" class="btn btn-light fw-semibold px-4 shadow-sm rounded-pill">Truy cập</a>
+                            @else
+                                <button class="btn btn-outline-light fw-semibold px-4 shadow-sm rounded-pill" disabled>Đang phát triển</button>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endforeach
 
         </div>
-        <div class="col"></div>
     </div>
 </div>
-@endsection
 
 @push('styles')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<style>
+    /* Nền tổng thể trắng */
+    body {
+        background-color: #ffffff !important;
+        font-family: 'Poppins', sans-serif;
+        color: #212529;
+    }
+
+    .admin-dashboard {
+        min-height: calc(100vh - 140px);
+        background-color: #ffffff;
+    }
+
+    /* Thẻ dashboard */
+    .card-glass {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1.2rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .card-glass:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+    }
+
+    .card-inner {
+        padding: 2.5rem 1.5rem;
+    }
+
+    .lucide-icon {
+        width: 48px;
+        height: 48px;
+        stroke-width: 1.8;
+    }
+
+    /* Màu gradient từng loại thẻ */
+    .bg-gradient-primary { background: linear-gradient(135deg, #007bff, #00c6ff); }
+    .bg-gradient-success { background: linear-gradient(135deg, #28a745, #7bdcb5); }
+    .bg-gradient-warning { background: linear-gradient(135deg, #ffc107, #ff8b00); }
+    .bg-gradient-info { background: linear-gradient(135deg, #17a2b8, #5bc0de); }
+    .bg-gradient-danger { background: linear-gradient(135deg, #dc3545, #ff758c); }
+    .bg-gradient-secondary { background: linear-gradient(135deg, #6c757d, #adb5bd); }
+    .bg-gradient-dark { background: linear-gradient(135deg, #212529, #495057); }
+
+    .btn {
+        transition: 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+    }
+
+</style>
 @endpush
+
+@push('scripts')
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    lucide.createIcons();
+</script>
+@endpush
+@endsection

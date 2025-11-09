@@ -7,20 +7,19 @@ use App\Models\User;
 use App\Models\Customer;
 use Illuminate\Support\Facades\Auth;
 use App\Models\adminRole;
+use App\Models\PaymentMethod;
 
 class UserController extends Controller
 {
-    // Hàm đăng ký
+    // Đăng ký
     public function register(Request $request)
     {
-        // Kiểm tra dữ liệu nhập
         $request->validate([
             'name' => 'required',
             'email' => 'required|unique:users',
             'password' => 'required|min:3'
         ]);
 
-        // Kiểm tra từng trường xem có trùng hay không
         if (User::where('name', $request->name)->exists()) {
             return back()->withErrors(['name' => 'Tên này đã có người sử dụng.'])->withInput();
         }
@@ -29,18 +28,13 @@ class UserController extends Controller
             return back()->withErrors(['email' => 'Email này đã tồn tại.'])->withInput();
         }
 
-        // if (User::where('password', $request->password)->exists()) {
-        //     return back()->withErrors(['password' => 'Mật khẩu này đã được sử dụng, hãy chọn mật khẩu khác.'])->withInput();
-        // }
-
-        // Tạo user mới (KHÔNG mã hoá password)
+        // Tạo user (chưa mã hoá mật khẩu)
         $user = new User();
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->password = $request->password; // không dùng Hash
+        $user->password = $request->password;
         $user->save();
 
-        // Quay lại trang đăng nhập
         return redirect('/login')->with('success', 'Đăng ký thành công! Vui lòng đăng nhập.');
     }
 
@@ -52,74 +46,95 @@ class UserController extends Controller
             'password' => 'required'
         ]);
 
-        // Tìm user theo email
         $user = User::where('email', $request->email)->first();
 
-        // So sánh trực tiếp mật khẩu
         if ($user && $user->password === $request->password) {
-            Auth::login($user); // Đăng nhập thành công
+            Auth::login($user);
 
-            // Kiểm tra xem user có trong bảng adminRole không
             $isAdmin = adminRole::where('U_ID', $user->id)->exists();
 
             if ($isAdmin) {
-                // Lấy danh sách user để truyền qua view admin
                 $users = User::all();
                 return view('admin.index', compact('users'));
             }
             return redirect('/home');
         }
 
-        // Nếu sai thông tin đăng nhập
-        return back()->withErrors([
-            'email' => 'Sai email hoặc mật khẩu.'
-        ]);
+        return back()->withErrors(['email' => 'Sai email hoặc mật khẩu.']);
     }
 
-    //  Đăng xuất
+    // Đăng xuất
     public function logout()
     {
         Auth::logout();
         return redirect('/login')->with('success', 'Bạn đã đăng xuất.');
     }
 
+    // Hiển thị thông tin người dùng
     public function info()
     {
-        $user = Auth::user(); // Lấy thông tin user đang đăng nhập
-        return view('users.info', compact('user'));
-    }
- public function show()
-    {
         $user = Auth::user();
+
+        // Tìm customer tương ứng với user
         $customer = Customer::where('UserID', $user->id)->first();
-        $loyalty = $user->loyalty ?? null; // nếu có quan hệ loyalty
-        return view('user.info', compact('user', 'customer', 'loyalty'));
+
+        // Tìm payment method tương ứng
+        $payment = null;
+        if ($customer) {
+            $payment = PaymentMethod::where('CustomerID', $customer->CustomerID)->first();
+        }
+
+        // Lấy loyalty program (nếu có)
+        $loyalty = $user->loyaltyProgram ?? null;
+
+        return view('users.info', compact('user', 'customer', 'payment', 'loyalty'));
     }
 
+
+
+    // Sửa thông tin
     public function edit()
     {
         $user = Auth::user();
         $customer = Customer::where('UserID', $user->id)->first();
-        return view('users.edit', compact('user', 'customer'));
+        $payment = $customer ? $customer->paymentMethods()->first() : null;
+
+        return view('users.edit', compact('user', 'customer', 'payment'));
     }
 
+    // Cập nhật thông tin
     public function update(Request $request)
-    {
-        $user = User::find(Auth::id());
+{
+    $user = Auth::user();
 
-        // Cập nhật bảng users
-        $user->name = $request->input('name');
-        $user->save();
+    // Cập nhật bảng users
+    $user->update([
+        'name' => $request->input('name'),
+    ]);
 
-        // Cập nhật hoặc tạo mới customer
-        $customer = Customer::firstOrCreate(['UserID' => $user->id]);
-        $customer->Phone = $request->input('phone');
-        $customer->Gender = $request->input('gender');
-        $customer->DateOfBirth = $request->input('date_of_birth');
-        $customer->Nationality = $request->input('nationality');
-        $customer->save();
+    // Cập nhật hoặc tạo bảng Customers
+    $customer = Customer::firstOrCreate(['UserID' => $user->id]);
+    $customer->update([
+        'Phone' => $request->input('phone'),
+        'Gender' => $request->input('gender'),
+        'DateOfBirth' => $request->input('date_of_birth'),
+        'Nationality' => $request->input('nationality'),
+    ]);
 
-        return redirect()->route('user.info')->with('success', 'Cập nhật thông tin thành công!');
+    // Cập nhật hoặc tạo bảng PaymentMethods
+    if ($request->filled('payment_type') || $request->filled('provider') || $request->filled('account_number')) {
+        PaymentMethod::updateOrCreate(
+            ['CustomerID' => $customer->CustomerID],
+            [
+                'PaymentType' => $request->input('payment_type'),
+                'Provider' => $request->input('provider'),
+                'AccountNumber' => $request->input('account_number'),
+                'ExpiryDate' => $request->input('expiry_date'),
+            ]
+        );
     }
+
+    return redirect()->route('user.info')->with('success', 'Cập nhật thông tin và phương thức thanh toán thành công!');
+}
 
 }
