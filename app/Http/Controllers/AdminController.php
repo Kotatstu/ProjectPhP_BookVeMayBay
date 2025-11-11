@@ -38,21 +38,28 @@ class AdminController extends BaseController
         return view('admin.members', compact('members'));
     }
 
-    public function index()
+    private function authorizeAdmin()
     {
         $user = Auth::user();
-
-        // Kiểm tra xem user có trong bảng adminRole không
         $isAdmin = adminRole::where('U_ID', $user->id)->exists();
         if (!$isAdmin) {
-            return redirect('/home')->with('error', 'Bạn không có quyền truy cập trang admin.');
+            return redirect('/home')->with('error', 'Bạn không có quyền truy cập trang admin.')->send();
+            // send() để dừng thực hiện hàm hiện tại sau redirect
         }
+    }
+
+
+    public function index()
+    {
+        $this->authorizeAdmin();
 
         return view('admin.index');
     }
 
     public function usersList()
     {
+        $this->authorizeAdmin();
+
         $user = Auth::user();
         // Lấy tất cả người dùng từ bảng 'users'
         $users = DB::table('users')->get();
@@ -64,6 +71,8 @@ class AdminController extends BaseController
     // Phương thức sửa thông tin người dùng
     public function editUser($id)
     {
+        $this->authorizeAdmin();
+
         // Lấy thông tin người dùng dựa trên ID
         $user = User::findOrFail($id);
         $isAdmin = adminRole::where('U_ID', $user->id)->exists();
@@ -73,6 +82,8 @@ class AdminController extends BaseController
 
     public function updateUser(Request $request, $id)
     {
+        $this->authorizeAdmin();
+
         $user = User::findOrFail($id);
         
         $user->name = $request->name;
@@ -99,6 +110,8 @@ class AdminController extends BaseController
     // Phương thức xóa người dùng
     public function deleteUser($id)
     {
+        $this->authorizeAdmin();
+
         // Xóa người dùng từ bảng 'users'
         DB::table('users')->where('id', $id)->delete();
 
@@ -108,6 +121,8 @@ class AdminController extends BaseController
 
     public function flightsList()
     {
+        $this->authorizeAdmin();
+
         $flights = Flight::orderBy('DepartureTime', 'asc')->get();
 
         return view('admin.flights', compact('flights'));
@@ -115,6 +130,8 @@ class AdminController extends BaseController
 
     public function flightDetail($id)
     {
+        $this->authorizeAdmin();
+
         $flight = Flight::with([
             'airline',
             'aircraft',
@@ -135,6 +152,8 @@ class AdminController extends BaseController
 
     public function createFlight()
     {
+        $this->authorizeAdmin();
+
         $airlines = \App\Models\Airline::all();
         $aircrafts = \App\Models\Aircraft::all();
         $airports = \App\Models\Airport::all();
@@ -144,6 +163,8 @@ class AdminController extends BaseController
 
     public function storeFlight(Request $request)
     {
+        $this->authorizeAdmin();
+
         $validated = $request->validate([
             'AirlineID' => 'required|exists:Airlines,AirlineID',
             'FlightNumber' => 'required|string|max:10|unique:Flights,FlightNumber',
@@ -166,6 +187,8 @@ class AdminController extends BaseController
 
     public function editFlight($id)
     {
+        $this->authorizeAdmin();
+
         $flight = Flight::findOrFail($id);
         $airlines = Airline::all();
         $aircrafts = Aircraft::all();
@@ -176,6 +199,8 @@ class AdminController extends BaseController
 
     public function updateFlight(Request $request, $id)
     {
+        $this->authorizeAdmin();
+
         $flight = Flight::findOrFail($id);
 
         $validated = $request->validate([
@@ -200,30 +225,33 @@ class AdminController extends BaseController
 
     public function deleteFlight($id)
     {
+        $this->authorizeAdmin();
+
         $flight = Flight::findOrFail($id);
         $flight->delete();
 
         return redirect()->route('admin.flights')->with('success', 'Đã xóa chuyến bay!');
     }
 
-    private function authorizeAdmin()
+    public function listAircraft() 
     {
-        $user = Auth::user();
-        if (!AdminRole::where('U_ID', $user->id)->exists()) {
-            abort(403, 'Bạn không có quyền truy cập trang này.');
-        }
-    }
+        $this->authorizeAdmin();
 
-    public function listAircraft() {
         $aircrafts = Aircraft::all();
         return view('admin.aircrafts', compact('aircrafts'));
     }
 
-    public function createAircraft() {
+    public function createAircraft() 
+    {
+        $this->authorizeAdmin();
+
         return view('admin.createAircraft');
     }
 
-    public function storeAircraft(Request $request) {
+    public function storeAircraft(Request $request) 
+    {
+        $this->authorizeAdmin();
+
         $request->validate([
             'AircraftCode' => 'required|unique:Aircrafts',
             'AircraftType' => 'required',
@@ -233,33 +261,51 @@ class AdminController extends BaseController
         return redirect()->route('admin.aircrafts.index')->with('success', 'Thêm máy bay thành công!');
     }
 
-    public function editAircraft($id) {
+    public function editAircraft($id)
+    {
+        $this->authorizeAdmin();
+
         $aircraft = Aircraft::findOrFail($id);
         return view('admin.editAircraft', compact('aircraft'));
     }
 
-    public function updateAircraft(Request $request, $id) {
+    public function updateAircraft(Request $request, $id)
+    {
+        $this->authorizeAdmin();
+
         $aircraft = Aircraft::findOrFail($id);
         $request->validate(['AircraftType' => 'required']);
         $aircraft->update($request->all());
         return redirect()->route('admin.aircrafts.index')->with('success', 'Cập nhật máy bay thành công!');
     }
 
-    public function deleteAircraft($id) {
+    public function deleteAircraft($id) 
+    {
+        $this->authorizeAdmin();
+
         Aircraft::findOrFail($id)->delete();
         return redirect()->route('admin.aircrafts.index')->with('success', 'Xóa máy bay thành công!');
     }
 
-    public function listAirline() {
+    public function listAirline() 
+    {
+        $this->authorizeAdmin();
+
         $airlines = Airline::all();
         return view('admin.airlines', compact('airlines'));
     }
 
-    public function createAirline() {
+    public function createAirline() 
+    {
+        $this->authorizeAdmin();
+
         return view('admin.createAirline');
     }
 
-    public function storeAirline(Request $request) {
+    public function storeAirline(Request $request) 
+    {
+        $this->authorizeAdmin();
+
         $request->validate([
             'AirlineID' => 'required|unique:Airlines',
             'AirlineName' => 'required',
@@ -271,12 +317,18 @@ class AdminController extends BaseController
         return redirect()->route('admin.airlines.index')->with('success', 'Thêm hãng hàng không thành công!');
     }
 
-    public function editAirline($id) {
+    public function editAirline($id) 
+    {
+        $this->authorizeAdmin();
+
         $airline = Airline::findOrFail($id);
         return view('admin.editAirline', compact('airline'));
     }
 
-    public function updateAirline(Request $request, $id) {
+    public function updateAirline(Request $request, $id) 
+    {
+        $this->authorizeAdmin();
+
         $airline = Airline::findOrFail($id);
         $request->validate([
             'AirlineName' => 'required',
@@ -288,22 +340,34 @@ class AdminController extends BaseController
         return redirect()->route('admin.airlines.index')->with('success', 'Cập nhật hãng hàng không thành công!');
     }
 
-    public function deleteAirline($id) {
+    public function deleteAirline($id) 
+    {
+        $this->authorizeAdmin();
+
         Airline::findOrFail($id)->delete();
         return redirect()->route('admin.airlines.index')->with('success', 'Xóa hãng hàng không thành công!');
     }
 
 
-    public function listAirport() {
+    public function listAirport() 
+    {
+        $this->authorizeAdmin();
+
         $airports = Airport::all();
         return view('admin.airports', compact('airports'));
     }
 
-    public function createAirport() {
+    public function createAirport() 
+    {
+        $this->authorizeAdmin();
+
         return view('admin.createAirport');
     }
 
-    public function storeAirport(Request $request) {
+    public function storeAirport(Request $request) 
+    {
+        $this->authorizeAdmin();
+
         $request->validate([
             'AirportCode' => 'required|unique:Airports',
             'AirportName' => 'required',
@@ -316,12 +380,18 @@ class AdminController extends BaseController
         return redirect()->route('admin.airports.index')->with('success', 'Thêm sân bay thành công!');
     }
 
-    public function editAirport($id) {
+    public function editAirport($id)
+    {
+        $this->authorizeAdmin();
+
         $airport = Airport::findOrFail($id);
         return view('admin.editAirport', compact('airport'));
     }
 
-    public function updateAirport(Request $request, $id) {
+    public function updateAirport(Request $request, $id) 
+    {
+        $this->authorizeAdmin();
+
         $airport = Airport::findOrFail($id);
         $request->validate([
             'AirportName' => 'required',
@@ -334,13 +404,18 @@ class AdminController extends BaseController
         return redirect()->route('admin.airports.index')->with('success', 'Cập nhật sân bay thành công!');
     }
 
-    public function deleteAirport($id) {
+    public function deleteAirport($id) 
+    {
+        $this->authorizeAdmin();
+
         Airport::findOrFail($id)->delete();
         return redirect()->route('admin.airports.index')->with('success', 'Xóa sân bay thành công!');
     }
 
     public function listTickets()
     {
+        $this->authorizeAdmin();
+
         $tickets = Ticket::with([
             'customer.user',
             'fare.cabinClass',
@@ -352,6 +427,8 @@ class AdminController extends BaseController
 
     public function editTicket($id)
     {
+        $this->authorizeAdmin();
+
         $ticket = Ticket::findOrFail($id);
         $customers = Customer::with('user')->get();
         $fares = Fare::with('cabinClass')->get();
@@ -362,6 +439,8 @@ class AdminController extends BaseController
 
     public function updateTicket(Request $request, $id)
     {
+        $this->authorizeAdmin();
+
         $ticket = Ticket::findOrFail($id);
 
         $validated = $request->validate([
@@ -376,9 +455,12 @@ class AdminController extends BaseController
 
         return redirect()->route('admin.tickets.index')->with('success', 'Cập nhật vé thành công!');
     }
+    
 
     public function deleteTicket($id)
     {
+        $this->authorizeAdmin();
+
         $ticket = Ticket::findOrFail($id);
         $ticket->delete();
 
@@ -387,6 +469,8 @@ class AdminController extends BaseController
 
     public function listFare()
     {
+        $this->authorizeAdmin();
+
         $fares = Fare::with(['flight.departureAirport', 'flight.arrivalAirport', 'cabinClass'])->get();
 
         return view('admin.Fares', compact('fares'));
@@ -394,6 +478,8 @@ class AdminController extends BaseController
 
     public function editFare($id)
     {
+        $this->authorizeAdmin();
+
         $fare = Fare::findOrFail($id);
         $flights = Flight::all();
         $classes = CabinClass::all();
@@ -403,6 +489,8 @@ class AdminController extends BaseController
 
     public function updateFare(Request $request, $id)
     {
+        $this->authorizeAdmin();
+
         $fare = Fare::findOrFail($id);
         $fare->update($request->all());
 
@@ -411,6 +499,8 @@ class AdminController extends BaseController
 
     public function destroyFare($id)
     {
+        $this->authorizeAdmin();
+
         $fare = Fare::findOrFail($id);
         $fare->delete();
 
@@ -419,6 +509,8 @@ class AdminController extends BaseController
 
     public function createFare()
     {
+        $this->authorizeAdmin();
+
         $flights = Flight::with(['departureAirport', 'arrivalAirport'])->get();
         $classes = CabinClass::all();
 
@@ -427,6 +519,8 @@ class AdminController extends BaseController
 
     public function storeFare(Request $request)
     {
+        $this->authorizeAdmin();
+
         $request->validate([
             'FlightID' => 'required|exists:Flights,FlightID',
             'CabinClassID' => 'required|exists:CabinClasses,CabinClassID',
@@ -440,6 +534,8 @@ class AdminController extends BaseController
     }
     public function revenue()
     {
+        $this->authorizeAdmin();
+
         // Doanh thu theo tháng
         $revenueByMonth = Ticket::select(
                 DB::raw('MONTH(BookingDate) as month'),

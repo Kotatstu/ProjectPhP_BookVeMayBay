@@ -54,7 +54,7 @@
             <div class="col">
                 <a href="{{ route('flights.detail', $flight->id ?? $flight->FlightID) }}" class="text-decoration-none">
                     <div class="card h-100 shadow-sm flight-card">
-                        <img src="{{ asset($flight->airline_logo) }}" class="card-img-top" alt="{{ $flight->airline_name }}">
+                        <img src="{{ asset('images/default.jpg') }}" class="card-img-top" alt="{{ $flight->airline_name }}">
                         <div class="card-body">
                             <h6 class="card-title text-dark fw-bold">
                                 {{ $flight->from_city }} → {{ $flight->to_city }}

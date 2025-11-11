@@ -7,7 +7,7 @@
     <div class="container">
 
         <div class="text-center mb-5">
-            <h1 class="fw-bold text-dark mb-2 display-5">🎯 Bảng điều khiển quản trị</h1>
+            <h1 class="fw-bold text-dark mb-2 display-5">Bảng điều khiển quản trị</h1>
             <p class="text-muted fs-5">Theo dõi và quản lý toàn bộ hệ thống đặt vé máy bay</p>
         </div>
 
