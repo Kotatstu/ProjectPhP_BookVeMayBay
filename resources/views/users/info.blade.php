@@ -2,71 +2,143 @@
 
 @section('content')
 <style>
+    body {
+        background: linear-gradient(135deg, #e0f7fa, #f1f8e9);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
     .user-info-wrapper {
         display: flex;
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        background-color: #f8f9fa;
+        padding: 40px 15px;
     }
 
     .user-info-card {
-        width: 70%;
-        max-width: 950px;
-        border-radius: 20px;
+        width: 100%;
+        max-width: 1000px;
+        border-radius: 25px;
         background: white;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .user-info-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #007bff, #00c6ff);
+        color: white;
+        text-align: center;
+        padding: 25px;
+    }
+
+    .card-header h3 {
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .card-body {
+        padding: 40px 35px;
+    }
+
+    .info-section {
+        background: #f9fafc;
+        border: 1px solid #e5e9f2;
+        border-radius: 15px;
+        padding: 20px 25px;
+        transition: all 0.3s ease;
+    }
+
+    .info-section:hover {
+        background: #f1f5fb;
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.15);
+    }
+
+    .info-section h5 {
+        font-weight: 600;
+        color: #007bff;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .info-section p {
+        margin-bottom: 10px;
+        font-size: 15px;
+    }
+
+    .info-section strong {
+        color: #343a40;
+    }
+
+    .info-section span.text-muted {
+        color: #6c757d !important;
+    }
+
+    hr {
+        margin: 10px 0 15px;
     }
 
     .btn-custom {
-        border-radius: 25px;
-        padding: 10px 25px;
+        border-radius: 30px;
+        padding: 12px 25px;
         transition: all 0.3s ease;
         border: none;
         color: white;
+        font-weight: 500;
     }
 
     .btn-update {
-        background-color: #28a745;
+        background: linear-gradient(135deg, #28a745, #6dd070);
     }
 
     .btn-update:hover {
-        background-color: #218838;
-        transform: scale(1.05);
+        transform: translateY(-3px);
+        background: linear-gradient(135deg, #23923c, #4ac959);
     }
 
     .btn-return {
-        background-color: #007bff;
+        background: linear-gradient(135deg, #007bff, #5ab0ff);
     }
 
     .btn-return:hover {
-        background-color: #0056b3;
-        transform: scale(1.05);
+        transform: translateY(-3px);
+        background: linear-gradient(135deg, #0056b3, #4a9bff);
+    }
+
+    .btn i {
+        vertical-align: middle;
+        margin-right: 6px;
+    }
+
+    @media (max-width: 767px) {
+        .card-body {
+            padding: 25px 15px;
+        }
     }
 </style>
 
 <div class="user-info-wrapper">
-    <div class="card shadow-lg border-0 rounded-4 user-info-card">
-        <div class="card-header bg-primary text-white rounded-top-4">
-            <h3 class="mb-0 text-center">
-                <i data-lucide="user" class="me-2"></i> Thông tin người dùng
+    <div class="card user-info-card">
+        <div class="card-header">
+            <h3>
+                <i data-lucide="user" class="me-2"></i>Thông tin người dùng
             </h3>
         </div>
 
-        <div class="card-body p-4">
+        <div class="card-body">
             <div class="row g-4">
                 {{-- THÔNG TIN CÁ NHÂN --}}
                 <div class="col-md-6">
-                    <div class="p-3 bg-light rounded-3 border">
-                        <h5 class="text-primary">
-                            <i data-lucide="id-card" class="me-2"></i>Thông tin cá nhân
-                        </h5>
+                    <div class="info-section">
+                        <h5><i data-lucide="id-card"></i>Thông tin cá nhân</h5>
                         <hr>
-                        <p><strong>Họ và tên:</strong>
-                            <span class="text-muted">{{ $user->name }}</span>
-                        </p>
-                        <p><strong>Email:</strong>
-                            <span class="text-muted">{{ $user->email }}</span>
-                        </p>
+                        <p><strong>Họ và tên:</strong> <span class="text-muted">{{ $user->name }}</span></p>
+                        <p><strong>Email:</strong> <span class="text-muted">{{ $user->email }}</span></p>
                         <p><strong>Số điện thoại:</strong>
                             <span class="text-muted">{{ optional($customer)->Phone ?? 'Chưa cập nhật' }}</span>
                         </p>
@@ -85,14 +157,10 @@
                         <p><strong>Quốc tịch:</strong>
                             <span class="text-muted">{{ optional($customer)->Nationality ?? 'Chưa cập nhật' }}</span>
                         </p>
-
-                        {{-- 🔹 PHƯƠNG THỨC THANH TOÁN --}}
                         <p><strong>Phương thức thanh toán:</strong>
                             <span class="text-muted">
                                 @if(isset($payment) && $payment)
-                                    {{ $payment->PaymentType ?? 'Không rõ' }} -
-                                    {{ $payment->Provider ?? 'Không rõ' }}
-                                    ({{ $payment->AccountNumber ?? '---' }})
+                                    {{ $payment->PaymentType ?? 'Không rõ' }} - {{ $payment->Provider ?? 'Không rõ' }} ({{ $payment->AccountNumber ?? '---' }})
                                 @else
                                     Chưa cập nhật
                                 @endif
@@ -103,14 +171,10 @@
 
                 {{-- THÔNG TIN TÀI KHOẢN --}}
                 <div class="col-md-6">
-                    <div class="p-3 bg-light rounded-3 border">
-                        <h5 class="text-primary">
-                            <i data-lucide="info" class="me-2"></i>Thông tin tài khoản
-                        </h5>
+                    <div class="info-section">
+                        <h5><i data-lucide="info"></i>Thông tin tài khoản</h5>
                         <hr>
-                        <p><strong>ID người dùng:</strong>
-                            <span class="text-muted">{{ $user->id }}</span>
-                        </p>
+                        <p><strong>ID người dùng:</strong> <span class="text-muted">{{ $user->id }}</span></p>
                         <p><strong>Ngày tạo tài khoản:</strong>
                             <span class="text-muted">
                                 @if($user->created_at)
@@ -135,7 +199,7 @@
             </div>
 
             {{-- NÚT HÀNH ĐỘNG --}}
-            <div class="text-center mt-4">
+            <div class="text-center mt-5">
                 <a href="{{ url('/home') }}" class="btn btn-custom btn-return me-3">
                     <i data-lucide="arrow-left"></i> Quay lại trang chủ
                 </a>

@@ -10,16 +10,24 @@
   /* Hiệu ứng nền nhẹ nhàng */
   body {
     background: linear-gradient(135deg, #b3e5fc, #e3f2fd, #ffffff);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background-size: 200% 200%;
     animation: bgmove 8s ease-in-out infinite alternate;
+    margin: 0;
   }
 
   @keyframes bgmove {
     0% { background-position: 0% 50%; }
     100% { background-position: 100% 50%; }
+  }
+
+  /* Bọc form đăng nhập trong phần main để tránh bị navbar che */
+  main.login-page {
+    min-height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 50px; /* chừa khoảng cách cho navbar fixed-top */
+    padding-bottom: 60px; /* chừa chỗ cho footer */
   }
 
   .login-card {
@@ -32,6 +40,7 @@
     padding: 36px;
     transform: translateY(0);
     transition: all 0.4s ease;
+    animation: fadeIn 1s ease forwards;
   }
 
   .login-card:hover {
@@ -47,7 +56,6 @@
     letter-spacing: 0.5px;
   }
 
-  /* Input có hiệu ứng glow khi focus */
   .form-control {
     border-radius: 12px;
     border: 1px solid #d0d7de;
@@ -107,18 +115,13 @@
     justify-content: center;
   }
 
-  /* Hiệu ứng fade-in khi form hiện ra */
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
-
-  .login-card {
-    animation: fadeIn 1s ease forwards;
-  }
 </style>
 
-<div class="container d-flex align-items-center justify-content-center">
+<main class="login-page">
   <div class="login-card">
     <h3>Đăng nhập tài khoản</h3>
 
@@ -144,7 +147,6 @@
         <input type="email" id="email" name="email" class="form-control" placeholder="Nhập email của bạn" value="{{ old('email') }}" required>
       </div>
 
-      <!-- Ô nhập mật khẩu có icon ẩn/hiện -->
       <div class="mb-3">
         <label for="password" class="form-label fw-semibold">Mật khẩu</label>
         <div class="input-group">
@@ -169,9 +171,8 @@
       </div>
     </form>
   </div>
-</div>
+</main>
 
-<!-- Script xử lý ẩn/hiện mật khẩu -->
 <script>
   lucide.createIcons();
 
@@ -186,5 +187,4 @@
     lucide.createIcons();
   });
 </script>
-
 @endsection

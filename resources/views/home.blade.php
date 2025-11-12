@@ -74,7 +74,6 @@
         {{ $flights->links('pagination::bootstrap-5') }}
     </div>
 </div>
-
 @endsection
 
 
@@ -84,6 +83,8 @@
 document.addEventListener("DOMContentLoaded", function() {
     const wrapper = document.querySelector('.card-wrapper');
     const cards = document.querySelectorAll('.flight-card');
+    const nextBtn = document.querySelector('.next-btn');
+    const prevBtn = document.querySelector('.prev-btn');
 
     if (!wrapper || cards.length === 0) return;
 
@@ -91,65 +92,62 @@ document.addEventListener("DOMContentLoaded", function() {
     const style = getComputedStyle(card);
     const cardWidth = card.offsetWidth + parseInt(style.marginRight || 20);
 
-    let isScrolling = false;
+    let isAnimating = false;
+    let animationFrameId;
 
-    // --- Cập nhật hiển thị nút ---
-    function updateButtons() {
-        const atStart = wrapper.scrollLeft <= 5;
-        const atEnd = wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 5;
-
-        prevBtn.style.opacity = atStart ? "0" : "1";
-        prevBtn.style.pointerEvents = atStart ? "none" : "auto";
-
-        nextBtn.style.opacity = atEnd ? "0" : "1";
-        nextBtn.style.pointerEvents = atEnd ? "none" : "auto";
+    // --- easing mượt như cubic-bezier(0.25, 0.1, 0.25, 1)
+    function easeOutQuart(t) {
+        return 1 - Math.pow(1 - t, 4);
     }
 
-    // --- Cuộn mượt với animation ---
     function smoothScroll(distance) {
-        if (isScrolling) return;
-        isScrolling = true;
+        if (isAnimating) cancelAnimationFrame(animationFrameId);
+        isAnimating = true;
 
         const start = wrapper.scrollLeft;
         const end = start + distance;
-        const duration = 400;
+        const duration = 650; // tăng thời gian để mượt hơn
         const startTime = performance.now();
 
-        function animateScroll(currentTime) {
+        function animate(currentTime) {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            wrapper.scrollLeft = start + (end - start) * easeInOutCubic(progress);
+            const eased = easeOutQuart(progress);
+            wrapper.scrollLeft = start + (end - start) * eased;
 
             if (progress < 1) {
-                requestAnimationFrame(animateScroll);
+                animationFrameId = requestAnimationFrame(animate);
             } else {
-                isScrolling = false;
+                isAnimating = false;
                 updateButtons();
             }
         }
 
-        requestAnimationFrame(animateScroll);
+        animationFrameId = requestAnimationFrame(animate);
     }
 
-    // --- Hàm easing cho chuyển động mượt ---
-    function easeInOutCubic(t) {
-        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    function updateButtons() {
+        const atStart = wrapper.scrollLeft <= 5;
+        const atEnd = wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 5;
+        if (prevBtn && nextBtn) {
+            prevBtn.style.opacity = atStart ? "0" : "1";
+            prevBtn.style.pointerEvents = atStart ? "none" : "auto";
+            nextBtn.style.opacity = atEnd ? "0" : "1";
+            nextBtn.style.pointerEvents = atEnd ? "none" : "auto";
+        }
     }
 
-    // --- Sự kiện click ---
-    nextBtn.addEventListener('click', () => smoothScroll(cardWidth));
-    prevBtn.addEventListener('click', () => smoothScroll(-cardWidth));
+    if (nextBtn) nextBtn.addEventListener('click', () => smoothScroll(cardWidth * 1.2));
+    if (prevBtn) prevBtn.addEventListener('click', () => smoothScroll(-cardWidth * 1.2));
 
-    // --- Theo dõi cuộn thủ công ---
     wrapper.addEventListener('scroll', () => {
         clearTimeout(wrapper._scrollTimer);
-        wrapper._scrollTimer = setTimeout(updateButtons, 150);
+        wrapper._scrollTimer = setTimeout(updateButtons, 120);
     });
 
-    // --- Khi resize ---
     window.addEventListener('resize', updateButtons);
-
     updateButtons();
 });
 </script>
 @endpush
+

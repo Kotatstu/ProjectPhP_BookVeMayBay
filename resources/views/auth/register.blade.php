@@ -10,16 +10,24 @@
   /* Nền động mượt */
   body {
     background: linear-gradient(135deg, #b3e5fc, #e3f2fd, #ffffff);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background-size: 200% 200%;
     animation: bgmove 8s ease-in-out infinite alternate;
+    margin: 0;
   }
 
   @keyframes bgmove {
     0% { background-position: 0% 50%; }
     100% { background-position: 100% 50%; }
+  }
+
+  /* Bọc form đăng ký trong phần main để tránh bị navbar che */
+  main.register-page {
+    min-height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 50px; /* chừa chỗ cho navbar fixed-top */
+    padding-bottom: 60px; /* chừa chỗ cho footer nếu có */
   }
 
   .register-card {
@@ -109,7 +117,7 @@
   }
 </style>
 
-<div class="container d-flex justify-content-center align-items-center">
+<main class="register-page">
   <div class="register-card">
     <h3>Tạo tài khoản mới</h3>
 
@@ -168,7 +176,7 @@
       </div>
     </form>
   </div>
-</div>
+</main>
 
 <!-- Script Lucide + ẩn/hiện mật khẩu -->
 <script>
@@ -190,5 +198,4 @@
   toggleVisibility('password', 'togglePassword');
   toggleVisibility('password_confirmation', 'toggleConfirmPassword');
 </script>
-
 @endsection
