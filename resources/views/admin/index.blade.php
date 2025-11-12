@@ -15,7 +15,7 @@
 
             @php
     $cards = [
-        ['icon' => 'users', 'title' => 'Người dùng', 'desc' => 'Quản lý danh sách và quyền truy cập', 'color' => 'primary', 'route' => 'admin.users'],
+        ['icon' => 'user-cog', 'title' => 'Người dùng', 'desc' => 'Quản lý danh sách và quyền truy cập', 'color' => 'primary', 'route' => 'admin.users'],
         ['icon' => 'plane', 'title' => 'Chuyến bay', 'desc' => 'Theo dõi và cập nhật lộ trình', 'color' => 'success', 'route' => 'admin.flights'],
         ['icon' => 'ticket', 'title' => 'Vé', 'desc' => 'Quản lý thông tin đặt chỗ và mã vé', 'color' => 'warning', 'route' => 'admin.tickets.index'],
         ['icon' => 'credit-card', 'title' => 'Thanh toán', 'desc' => 'Kiểm soát và đối soát giao dịch', 'color' => 'info', 'route' => 'admin.fares.index'],

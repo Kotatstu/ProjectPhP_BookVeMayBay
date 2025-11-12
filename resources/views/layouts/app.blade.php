@@ -112,6 +112,40 @@
     <div class="container mt-5 pt-5">
         @yield('content')
     </div>
+<footer class="bg-dark text-light pt-5 pb-4 mt-5">
+    <div class="container-fluid px-5">
+        <div class="row gy-4">
+            <div class="col-md-4">
+                <h5 class="text-uppercase fw-bold mb-3">Vé Máy Bay 24/7</h5>
+                <p>Trang web đặt vé máy bay trực tuyến nhanh chóng, tiện lợi và giá rẻ. Hỗ trợ khách hàng 24/7.</p>
+            </div>
+
+            <div class="col-md-4">
+                <h6 class="fw-bold mb-3">Liên hệ</h6>
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-geo-alt"></i> 140 Lê Trọng Tấn, TP. Hồ Chí Minh</li>
+                    <li><i class="bi bi-telephone"></i> +84 123 456 789</li>
+                    <li><i class="bi bi-envelope"></i> support@vemaybay247.vn</li>
+                </ul>
+            </div>
+
+            <div class="col-md-4">
+                <h6 class="fw-bold mb-3">Theo dõi chúng tôi</h6>
+                <div>
+                    <a href="#" class="text-light me-3"><i class="bi bi-facebook fs-4"></i></a>
+                    <a href="#" class="text-light me-3"><i class="bi bi-instagram fs-4"></i></a>
+                    <a href="#" class="text-light"><i class="bi bi-twitter fs-4"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <hr class="border-secondary my-4">
+
+        <div class="text-center small">
+            © {{ date('Y') }} Vé Máy Bay 24/7. All rights reserved.
+        </div>
+    </div>
+</footer>
 
     <script>
         lucide.createIcons();
