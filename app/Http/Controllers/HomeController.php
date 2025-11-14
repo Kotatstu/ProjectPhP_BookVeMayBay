@@ -31,66 +31,92 @@ class HomeController extends Controller
 
     public function show(Request $request, $id)
     {
+        // Lấy thông tin chuyến bay kèm airline, airport, fares
         $flight = Flight::with(['airline', 'departureAirport', 'arrivalAirport', 'fares.cabinClass'])
             ->findOrFail($id);
 
-        $minFare = $flight->fares->map(function ($fare) {
-            return $fare->BasePrice + $fare->Tax;
-        })->min();
+        // Giá vé thấp nhất
+        $minFare = $flight->fares->map(fn($fare) => $fare->BasePrice + $fare->Tax)->min() ?? 0;
+
+        // Logo airline
+        $logoFile = $flight->airline->LogoURL ?? null;
+        $logoPath = public_path("images/airlines/{$logoFile}");
+        $airlineLogo = ($logoFile && file_exists($logoPath))
+            ? asset("images/airlines/{$logoFile}")
+            : asset('images/default.jpg');
 
         $flightDetail = (object) [
             'id' => $flight->FlightID,
             'airline_name' => $flight->airline->AirlineName ?? '',
-            'airline_logo' => asset('storage/airline/' . ($flight->airline->LogoURL ?? 'temp.png')),
+            'airline_logo' => $airlineLogo,
             'from' => $flight->departureAirport->City . ' (' . $flight->departureAirport->AirportCode . ')',
             'to' => $flight->arrivalAirport->City . ' (' . $flight->arrivalAirport->AirportCode . ')',
             'departure_time' => date('H:i', strtotime($flight->DepartureTime)),
             'arrival_time' => date('H:i', strtotime($flight->ArrivalTime)),
             'departure_date' => date('d/m/Y', strtotime($flight->DepartureTime)),
-            'fare' => $minFare ?? 0,
+            'fare' => $minFare,
         ];
 
-        // Lấy hạng vé đã chọn (mặc định hạng vé đầu tiên)
-        $selectedFareId = $request->input('fare_id');
-        $selectedFare = $selectedFareId
-            ? $flight->fares->where('FareID', $selectedFareId)->first()
-            : $flight->fares->first();
-
-        // Lấy ghế trống theo hạng vé
-        $availableSeats = $selectedFare
-            ? DB::table('Seats as s')
+        // Lấy danh sách ghế kèm trạng thái
+        $availableSeats = DB::table('Seats as s')
             ->leftJoin('SeatAvailability as sa', function ($join) use ($flight) {
                 $join->on('s.SeatID', '=', 'sa.SeatID')
                     ->where('sa.FlightID', '=', $flight->FlightID);
             })
-            ->where('s.AircraftID', $flight->AircraftID)
-            ->where('s.CabinClassID', $selectedFare->CabinClassID)
-            ->where(function ($query) {
-                $query->where('sa.IsBooked', 0)
-                    ->orWhereNull('sa.IsBooked');  // ghế chưa có record -> coi là trống
+            ->leftJoin('Tickets as t', function ($join) use ($flight) {
+                $join->on('s.SeatID', '=', 't.SeatID')
+                    ->where('t.FlightID', '=', $flight->FlightID)
+                    ->whereIn('t.Status', ['Chờ thanh toán', 'Đã thanh toán']);
             })
-            ->select('s.SeatID', 's.SeatNumber')
+            ->where('s.AircraftID', $flight->AircraftID)
+            ->select(
+                's.SeatID',
+                's.SeatNumber',
+                's.CabinClassID',
+                DB::raw('COALESCE(sa.IsBooked, 0) as IsBooked'),
+                DB::raw('CASE WHEN t.TicketID IS NOT NULL THEN 1 ELSE 0 END as IsSold')
+            )
             ->get()
-            : collect();
-            
-        $selectedSeat = $availableSeats->first();
+            ->map(fn($seat) => (object) [
+                'SeatID' => $seat->SeatID,
+                'SeatNumber' => $seat->SeatNumber,
+                'CabinClassID' => $seat->CabinClassID,
+                'IsBooked' => (bool)$seat->IsBooked,
+                'IsSold' => (bool)$seat->IsSold,
+            ]);
 
-        // Phương thức thanh toán của user (nếu đã đăng nhập)
-        $user = Auth::user();
+        // Lấy tên CabinClass cho ghế
+        $cabinClassMap = DB::table('CabinClasses')->pluck('ClassName', 'CabinClassID')->toArray();
+        $availableSeats->transform(
+            fn($seat) =>
+            (object) array_merge((array)$seat, ['CabinClassName' => $cabinClassMap[$seat->CabinClassID] ?? 'Không xác định'])
+        );
+
+        // Nhóm ghế theo CabinClass
+        $seatsByCabin = $availableSeats->groupBy('CabinClassName');
+
+        // Lấy danh sách CabinClass có trong fares
+        $availableCabinClassIds = $flight->fares->pluck('CabinClassID')->toArray();
+
+        // Lấy phương thức thanh toán nếu user đã login
         $paymentMethods = collect();
         $customerId = null;
-        if ($user) {
-            // Lấy CustomerID từ bảng Customers
+        if ($user = Auth::user()) {
             $customerId = DB::table('Customers')->where('UserID', $user->id)->value('CustomerID');
-
             if ($customerId) {
-                $paymentMethods = DB::table('PaymentMethods')
-                    ->where('CustomerID', $customerId)
-                    ->get();
+                $paymentMethods = DB::table('PaymentMethods')->where('CustomerID', $customerId)->get();
             }
         }
 
-        return view('users.detail', compact('flight', 'flightDetail', 'availableSeats', 'paymentMethods', 'selectedFare', 'customerId', 'selectedSeat'));
+        return view('users.detail', compact(
+            'flight',
+            'flightDetail',
+            'availableSeats',
+            'seatsByCabin',
+            'paymentMethods',
+            'customerId',
+            'availableCabinClassIds'
+        ));
     }
 
     public function search(Request $request)

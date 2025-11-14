@@ -4,25 +4,38 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Ticket;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use App\Models\Customer;
 use App\Models\PaymentMethod;
+use App\Models\Seat;
+use App\Models\Fare;
+use App\Models\SeatAvailability;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\RedirectResponse;
 
 class CartController extends Controller
 {
-    // Xem giỏ hàng
-    public function index()
+    //Function xử lý một lần check login và lấy thông tin khách hàng
+    private function getCustomerOrRedirect()
     {
         $user = Auth::user();
         if (!$user) {
-            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để xem giỏ vé');
+            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để tiếp tục.');
         }
 
-        $customer = DB::table('Customers')->where('UserID', $user->id)->first();
+        $customer = Customer::where('UserID', $user->id)->first();
         if (!$customer) {
-            return redirect()->route('home')->with('error', 'Bạn chưa có thông tin khách hàng.');
+            return redirect()->route('home')->with('error', 'Không tìm thấy thông tin khách hàng.');
         }
+
+        return $customer;
+    }
+
+    //Xem giỏ hàng
+    public function index()
+    {
+        $customer = $this->getCustomerOrRedirect();
+        if ($customer instanceof RedirectResponse) return $customer;
 
         $tickets = Ticket::with([
             'fare.cabinClass',
@@ -38,99 +51,149 @@ class CartController extends Controller
         return view('users.cart', compact('tickets'));
     }
 
+    //Thêm vé vào giỏ hàng
     public function store(Request $request)
     {
-        $user = Auth::user();
+        $customer = $this->getCustomerOrRedirect();
+        if ($customer instanceof RedirectResponse) return $customer;
 
-        $customer = DB::table('Customers')->where('UserID', $user->id)->first();
-        if (!$customer) {
-            return back()->with('error', 'Bạn chưa có thông tin khách hàng.');
-        }
-        $customerId = $customer->CustomerID;
-
-        // Lấy thông tin từ form
-        $flightId = $request->input('flight_id');
-        $fareId = $request->input('fare_id');
-        $seatId = $request->input('seat_id');
-        $paymentMethodId = $request->input('payment_method');
-
-        // Tính tổng tiền dựa trên Fare
-        $fare = DB::table('Fares')->where('FareID', $fareId)->first();
-        if (!$fare) {
-            return back()->with('error', 'Hạng vé không hợp lệ');
-        }
-        $totalAmount = $fare->BasePrice + $fare->Tax;
-
-        // Thêm vào bảng Tickets
-        $ticket = Ticket::create([
-            'CustomerID' => $customerId,
-            'FlightID' => $flightId,
-            'FareID' => $fareId,
-            'SeatID' => $seatId,
-            'CabinClassID' => $fare->CabinClassID,
-            'PaymentMethodID' => $paymentMethodId,
-            'BookingDate' => now(),
-            'TotalAmount' => $totalAmount,
-            'Status' => 'Chờ thanh toán',
+        // Validate cơ bản
+        $request->validate([
+            'flight_id' => 'required|exists:Flights,FlightID',
+            'selected_seats' => 'nullable|string',
+            'payment_method' => 'nullable|exists:PaymentMethods,PaymentMethodID'
         ]);
 
-        // Cập nhật SeatAvailability đánh dấu ghế đã được chọn
-        DB::table('SeatAvailability')
-            ->where('FlightID', $flightId)
-            ->where('SeatID', $seatId)
-            ->update(['IsBooked' => 1]);
+        $flightId = $request->input('flight_id');
+        $paymentMethodId = $request->input('payment_method');
 
-        return redirect()->route('cart.index')->with('success', 'Đã lưu vé vào giỏ hàng');
+        // Tách seatIds, loại bỏ chuỗi rỗng
+        $seatIds = array_filter(explode(',', $request->input('selected_seats', '')));
+
+        // Nếu chưa chọn ghế
+        if (empty($seatIds)) {
+            return back()->with('error', 'Bạn chưa chọn ghế nào.');
+        }
+
+        foreach ($seatIds as $seatId) {
+            $seat = Seat::find($seatId);
+            if (!$seat) continue;
+
+            $fare = Fare::where('FlightID', $flightId)
+                ->where('CabinClassID', $seat->CabinClassID)
+                ->first();
+
+            if (!$fare) continue;
+
+            Ticket::create([
+                'CustomerID' => $customer->CustomerID,
+                'FlightID' => $flightId,
+                'FareID' => $fare->FareID,
+                'SeatID' => $seatId,
+                'CabinClassID' => $fare->CabinClassID,
+                'PaymentMethodID' => $paymentMethodId,
+                'BookingDate' => now(),
+                'TotalAmount' => $fare->BasePrice + $fare->Tax,
+                'Status' => 'Chờ thanh toán',
+            ]);
+
+            // Đánh dấu ghế đã được chọn
+            SeatAvailability::where('FlightID', $flightId)
+                ->where('SeatID', $seatId)
+                ->update(['IsBooked' => 1]);
+        }
+
+        return redirect()->route('cart.index')->with('success', 'Đã lưu vé vào giỏ hàng.');
     }
 
+    //Thanh toán ngay
     public function storeAndCheckout(Request $request)
     {
-        $user = Auth::user();
-        $customer = DB::table('Customers')->where('UserID', $user->id)->first();
-        $customerId = $customer->CustomerID;
+        // Lấy customer hoặc redirect nếu chưa login / không tồn tại
+        $customer = $this->getCustomerOrRedirect();
+        if ($customer instanceof RedirectResponse) return $customer;
 
-        // Lấy thông tin từ form
-        $flightId = $request->input('flight_id');
-        $fareId = $request->input('fare_id');
-        $seatId = $request->input('seat_id');
-        $paymentMethodId = $request->input('payment_method');
-
-        $fare = DB::table('Fares')->where('FareID', $fareId)->first();
-        $totalAmount = $fare->BasePrice + $fare->Tax;
-
-        $paymentMethod = DB::table('PaymentMethods')->where('CustomerID', $customerId)->first();
-        $paymentMethodId = $paymentMethod->PaymentMethodID ?? null;
-
-        if (!$paymentMethodId) {
-            return back()->with('error', 'Bạn chưa có phương thức thanh toán nào. Vui lòng thêm trước.');
-        }
-
-        // Thêm vé và lấy ID
-        $ticket = Ticket::create([
-            'CustomerID' => $customerId,
-            'FlightID' => $flightId,
-            'FareID' => $fareId,
-            'SeatID' => $seatId,
-            'CabinClassID' => $fare->CabinClassID,
-            'PaymentMethodID' => $paymentMethodId,
-            'BookingDate' => now(),
-            'TotalAmount' => $totalAmount,
-            'Status' => 'Chờ thanh toán',
+        $request->validate([
+            'flight_id' => 'required|exists:Flights,FlightID',
+            'seat_id' => 'nullable|string',
+            'selected_seats' => 'nullable|string',
+            'payment_method' => 'nullable|exists:PaymentMethods,PaymentMethodID'
         ]);
 
-        // Đánh dấu ghế đã chọn
-        DB::table('SeatAvailability')
-            ->where('FlightID', $flightId)
-            ->where('SeatID', $seatId)
-            ->update(['IsBooked' => 1]);
+        $flightId = $request->input('flight_id');
 
-        // Redirect sang trang checkout
-        return redirect()->route('cart.checkoutForm', ['ticket' => $ticket->TicketID]);
+        // Lấy danh sách seat
+        $seatIds = array_filter(explode(',', $request->input('seat_id') ?: $request->input('selected_seats', '')));
+        if (empty($seatIds)) {
+            return back()->with('error', 'Bạn chưa chọn ghế nào.');
+        }
+
+        // Lấy PaymentMethod, ưu tiên từ input, fallback lấy mặc định của customer
+        $paymentMethodId = $request->input('payment_method')
+            ?? PaymentMethod::where('CustomerID', $customer->CustomerID)->value('PaymentMethodID');
+
+        if (!$paymentMethodId) {
+            return back()->with('error', 'Bạn chưa có phương thức thanh toán nào.');
+        }
+
+        $ticketIds = [];
+
+        foreach ($seatIds as $seatId) {
+            $seat = Seat::find($seatId);
+            if (!$seat) continue;
+
+            $fare = Fare::where('FlightID', $flightId)
+                ->where('CabinClassID', $seat->CabinClassID)
+                ->first();
+
+            if (!$fare) {
+                return back()->with('error', 'Không tìm thấy thông tin giá vé.');
+            }
+
+            // Tạo ticket
+            $ticket = Ticket::create([
+                'CustomerID' => $customer->CustomerID,
+                'FlightID' => $flightId,
+                'FareID' => $fare->FareID,
+                'SeatID' => $seat->SeatID,
+                'CabinClassID' => $seat->CabinClassID,
+                'PaymentMethodID' => $paymentMethodId,
+                'BookingDate' => now(),
+                'TotalAmount' => $fare->BasePrice + $fare->Tax,
+                'Status' => 'Chờ thanh toán',
+            ]);
+
+            $ticketIds[] = $ticket->TicketID;
+
+            // Đánh dấu ghế đã được chọn
+            SeatAvailability::where('FlightID', $flightId)
+                ->where('SeatID', $seat->SeatID)
+                ->update(['IsBooked' => 1]);
+        }
+
+        if (empty($ticketIds)) {
+            return back()->with('error', 'Không tạo được vé nào. Vui lòng thử lại.');
+        }
+
+        // Redirect tới checkout tương ứng: 1 vé hoặc nhiều vé
+        return count($ticketIds) === 1
+            ? redirect()->route('cart.checkoutForm', ['ticket' => $ticketIds[0]])
+            : redirect()->route('cart.checkoutAllForm', ['ticket_ids' => implode(',', $ticketIds)]);
     }
 
-    // Hiển thị form thanh toán cho 1 vé
+    //Hiển thị form checkout cho 1 vé
     public function checkoutForm($ticketId)
     {
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để tiếp tục.');
+        }
+
+        $customer = Customer::where('UserID', $user->id)->first();
+        if (!$customer) {
+            return redirect()->route('home')->with('error', 'Không tìm thấy thông tin khách hàng.');
+        }
+
         $ticket = Ticket::with([
             'fare.cabinClass',
             'seat',
@@ -138,59 +201,128 @@ class CartController extends Controller
             'flight.departureAirport',
             'flight.arrivalAirport'
         ])->findOrFail($ticketId);
-        $user = Auth::user();
-        $customer = Customer::where('UserID', $user->id)->first();
+
         $paymentMethods = PaymentMethod::where('CustomerID', $customer->CustomerID)->get();
 
-        return view('users.checkout', compact('ticket', 'user', 'customer', 'paymentMethods'));
+        return view('users.checkout', [
+            'tickets' => collect([$ticket]), // giữ dạng collection để view dùng giống checkoutAll
+            'user' => $user,
+            'customer' => $customer,
+            'paymentMethods' => $paymentMethods
+        ]);
     }
 
+    public function checkoutAllForm(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để tiếp tục.');
+        }
+
+        $customer = Customer::where('UserID', $user->id)->first();
+        if (!$customer) {
+            return redirect()->route('home')->with('error', 'Không tìm thấy thông tin khách hàng.');
+        }
+
+        $ticketIds = explode(',', $request->input('ticket_ids', ''));
+        $ticketIds = array_filter($ticketIds);
+
+        $tickets = Ticket::with([
+            'fare.cabinClass',
+            'seat',
+            'flight.airline',
+            'flight.departureAirport',
+            'flight.arrivalAirport'
+        ])->whereIn('TicketID', $ticketIds)->get();
+
+        $paymentMethods = PaymentMethod::where('CustomerID', $customer->CustomerID)->get();
+
+        return view('users.checkout', compact('tickets', 'user', 'customer', 'paymentMethods'));
+    }
+
+    //Thanh toán 1 vé
     public function checkout(Request $request, $ticketId)
     {
         $ticket = Ticket::findOrFail($ticketId);
 
-        $paymentMethodId = $request->input('payment_method');
-        if (!$paymentMethodId) {
-            return back()->with('error', 'Vui lòng chọn phương thức thanh toán.');
-        }
-        // Cập nhật vé: paymentMethod + status
-        $ticket->PaymentMethodID = $paymentMethodId;
-        $ticket->Status = 'Đã thanh toán';
-        $ticket->save();
+        $request->validate([
+            'payment_method' => 'required|exists:PaymentMethods,PaymentMethodID'
+        ]);
 
-        // Đánh dấu ghế là đã được đặt
-        DB::table('SeatAvailability')
-            ->where('FlightID', $ticket->FlightID)
+        $ticket->update([
+            'PaymentMethodID' => $request->input('payment_method'),
+            'Status' => 'Đã thanh toán',
+        ]);
+
+        SeatAvailability::where('FlightID', $ticket->FlightID)
             ->where('SeatID', $ticket->SeatID)
             ->update(['IsBooked' => 1]);
 
         return redirect()->route('cart.index')->with('success', 'Thanh toán thành công!');
     }
 
+    //Thanh toán tất cả vé
+    public function checkoutAll(Request $request)
+    {
+        $customer = $this->getCustomerOrRedirect();
+        if ($customer instanceof RedirectResponse) return $customer;
+
+        $request->validate([
+            'ticket_ids' => 'required|string',
+            'payment_method' => 'required|exists:PaymentMethods,PaymentMethodID'
+        ]);
+
+        $idsArray = array_filter(explode(',', $request->input('ticket_ids')));
+        $tickets = Ticket::whereIn('TicketID', $idsArray)->get();
+
+        foreach ($tickets as $ticket) {
+            $ticket->update([
+                'PaymentMethodID' => $request->input('payment_method'),
+                'Status' => 'Đã thanh toán',
+            ]);
+
+            SeatAvailability::where('FlightID', $ticket->FlightID)
+                ->where('SeatID', $ticket->SeatID)
+                ->update(['IsBooked' => 1]);
+        }
+
+        return redirect()->route('cart.index')->with('success', 'Thanh toán tất cả vé thành công!');
+    }
+
+    //Xóa vé khỏi giỏ
     public function remove($ticketId)
     {
         $ticket = Ticket::findOrFail($ticketId);
 
-        // Reset trạng thái ghế
-        DB::table('SeatAvailability')
-            ->where('FlightID', $ticket->FlightID)
+        SeatAvailability::where('FlightID', $ticket->FlightID)
             ->where('SeatID', $ticket->SeatID)
             ->update(['IsBooked' => 0]);
 
         $ticket->delete();
 
-        return redirect()->route('cart.index')->with('success', 'Đã xóa vé khỏi giỏ hàng');
+        return redirect()->route('cart.index')->with('success', 'Đã xóa vé khỏi giỏ hàng.');
     }
 
+    //Huỷ vé
     public function cancel($ticketId)
     {
         $ticket = Ticket::findOrFail($ticketId);
-        $ticket->Status = 'Đã huỷ';
-        $ticket->save();
+        $ticket->update(['Status' => 'Đã huỷ']);
 
         return redirect()->route('cart.index')->with('success', 'Vé đã được huỷ.');
     }
 
+    //Reset vé để chỉnh sửa (tên method rõ ràng hơn)
+    public function resetTicketForEdit($ticketId)
+    {
+        $ticket = Ticket::findOrFail($ticketId);
+        $ticket->delete();
+
+        return redirect()->route('flights.detail', ['id' => $ticket->FlightID])
+            ->with('info', 'Bạn có thể chỉnh sửa hạng vé, ghế và phương thức thanh toán.');
+    }
+
+    //Sửa vé (chuyển hướng tới trang chi tiết chuyến bay)
     public function edit($ticketId)
     {
         $ticket = Ticket::findOrFail($ticketId);

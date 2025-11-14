@@ -34,14 +34,28 @@
                     @foreach ($pendingTickets as $ticket)
                         <tr>
                             <td>
-                                <img src="{{ $ticket->flight->airline->AirlineLogo ?? '' }}" class="cart-logo">
+                                @php
+                                    $logoFile = $ticket->flight->airline->LogoURL ?? null;
+                                    $logoPath = public_path('storage/airline/' . $logoFile);
+
+                                    $logoUrl =
+                                        $logoFile && file_exists($logoPath)
+                                            ? asset('storage/airline/' . $logoFile)
+                                            : asset('images/default.jpg');
+                                @endphp
+
+                                <img src="{{ $logoUrl }}" class="cart-logo"
+                                    alt="{{ $ticket->flight->airline->AirlineName ?? 'logo' }}">
                             </td>
                             <td>{{ $ticket->flight->airline->AirlineName ?? '' }}</td>
                             <td>{{ $ticket->flight->departureAirport->AirportName ?? '' }} ->
                                 {{ $ticket->flight->arrivalAirport->AirportName ?? '' }}</td>
-                            <td>{{ \Carbon\Carbon::parse($ticket->flight->DepartureDate)->format('d/m/Y') }}</td>
+
+                            <td>{{ \Carbon\Carbon::parse($ticket->flight->DepartureTime)->format('d/m/Y') }}</td>
+
                             <td>{{ \Carbon\Carbon::parse($ticket->flight->DepartureTime)->format('H:i') ?? '' }} -
                                 {{ \Carbon\Carbon::parse($ticket->flight->ArrivalTime)->format('H:i') ?? '' }}</td>
+
                             <td>{{ $ticket->fare->cabinClass->ClassName ?? '' }}</td>
                             <td>{{ $ticket->seat->SeatNumber ?? '' }}</td>
                             <td class="fw-bold text-success">{{ number_format($ticket->TotalAmount, 0, ',', '.') }} VND</td>
@@ -191,13 +205,29 @@
                 </tbody>
             </table>
         @endif
-
         {{-- Tổng tiền chỉ cộng vé chờ thanh toán --}}
         <div class="text-end fw-bold fs-5 mt-3 cart-total">
             Tổng cộng:
             <span class="text-danger">
                 {{ number_format($pendingTickets->sum('TotalAmount'), 0, ',', '.') }} VND
             </span>
+        </div>
+        <div class="cart-btn-wrapper">
+            @if ($pendingTickets->count() > 0)
+                @if ($pendingTickets->count() == 1)
+                    <form action="{{ route('cart.checkoutForm', $pendingTickets->first()->TicketID) }}" method="GET">
+                        <button type="submit" class="cart-checkout-btn cart-checkout-btn-single">Thanh toán vé</button>
+                    </form>
+                @else
+                    <form action="{{ route('cart.checkoutAllForm') }}" method="GET">
+                        @csrf
+                        <input type="hidden" name="ticket_ids"
+                            value="{{ $pendingTickets->pluck('TicketID')->implode(',') }}">
+                        <button type="submit" class="cart-checkout-btn cart-checkout-btn-multiple">Thanh toán tất
+                            cả</button>
+                    </form>
+                @endif
+            @endif
         </div>
     </div>
 @endsection

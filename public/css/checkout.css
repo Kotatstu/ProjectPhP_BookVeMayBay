@@ -54,10 +54,18 @@
 }
 
 /* ================== Ticket Info ================== */
-.checkout-ticket img {
-    max-height: 50px;
+.checkout-ticket-logo {
+    width: 240px;          
+    height: 140px;        
+    object-fit: cover;   
+    border-radius: 14px;   /* bo góc nhẹ */
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 12px;   
+    transition: transform 0.3s ease;
+}
+
+.checkout-ticket-logo:hover {
+    transform: scale(1.05);
 }
 
 /* ================== Form Elements ================== */
@@ -85,9 +93,11 @@
 
 /* ================== Buttons ================== */
 .checkout-btn {
-    background: linear-gradient(135deg, #007bff, #0056d2);
+    background: linear-gradient(135deg, #3992f1, #035ad3);
     border: none;
     color: white;
+    width: 200px;
+    padding: 14px 0;
     height: 48px;
     border-radius: 16px;
     font-size: 1rem;
@@ -98,9 +108,9 @@
 }
 
 .checkout-btn:hover {
-    background: linear-gradient(135deg, #0056d2, #003c99);
+    background: linear-gradient(135deg, #065dd7, #033e98);
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(0, 91, 187, 0.45);
+    box-shadow: 0 10px 30px rgba(2, 50, 101, 0.45);
     color: black;
 }
 

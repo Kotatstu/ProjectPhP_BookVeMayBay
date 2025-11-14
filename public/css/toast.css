@@ -19,8 +19,10 @@
     font-weight: 600;
     font-size: 1.05rem;
     color: #fff;
-    transform: translateY(15px);
-    transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transform: translateX(120%); /* bắt đầu ngoài màn hình bên phải */
+    transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                opacity 0.5s cubic-bezier(0.25, 0.8, 0.25, 1),
+                box-shadow 0.3s ease;
     pointer-events: auto; /* cho phép click đóng */
     cursor: pointer;
 }
@@ -28,18 +30,18 @@
 /* Khi hiển thị */
 .toast.show {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0); /* trượt vào vị trí */
 }
 
 /* Khi ẩn */
 .toast.hide {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateX(120%); /* trượt ra bên phải */
 }
 
 /* Hiệu ứng hover */
 .toast:hover {
-    transform: scale(1.03);
+    transform: translateX(0) scale(1.03); /* giữ vị trí, nhấn mạnh */
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 

@@ -29,41 +29,71 @@
                     <h5 class="checkout-section-title"><i class="bi bi-ticket-perforated"></i> Thông tin vé</h5>
                     <hr>
 
-                    @if ($ticket->flight->airline->LogoURL ?? false)
-                        <img src="{{ asset('storage/airline/' . $ticket->flight->airline->LogoURL) }}"
-                            alt="{{ $ticket->flight->airline->AirlineName }}" class="mb-2 checkout-ticket-logo">
-                    @endif
+                    @php
+                        $isMultiple = count($tickets) > 1;
+                        $totalAmount = $tickets->sum('TotalAmount');
+                        $ticketIds = $tickets->pluck('TicketID')->implode(',');
+                    @endphp
 
-                    <p><strong>Hãng:</strong> {{ $ticket->flight->airline->AirlineName ?? '' }}</p>
-                    <p><strong>Chặng:</strong>
-                        {{ $ticket->flight->departureAirport->AirportName ?? $ticket->flight->DepartureAirport }} →
-                        {{ $ticket->flight->arrivalAirport->AirportName ?? $ticket->flight->ArrivalAirport }}
-                    </p>
-                    <p><strong>Ngày bay:</strong> {{ date('d/m/Y', strtotime($ticket->flight->DepartureTime)) }}</p>
-                    <p><strong>Giờ:</strong> {{ date('H:i', strtotime($ticket->flight->DepartureTime)) }} -
-                        {{ date('H:i', strtotime($ticket->flight->ArrivalTime)) }}</p>
-                    <p><strong>Hạng vé:</strong> {{ $ticket->fare->cabinClass->ClassName ?? '' }}</p>
-                    <p><strong>Ghế:</strong> {{ $ticket->seat->SeatNumber ?? '' }}</p>
+                    @foreach ($tickets as $ticket)
+                        @php
+                            // Lấy tên file logo từ database
+                            $logoFile = $ticket->flight->airline->LogoURL ?? null;
+
+                            // Đường dẫn file thực tế trên server
+                            $logoPath = public_path('images/airlines/' . $logoFile);
+
+                            // Nếu tồn tại file thì dùng, nếu không thì dùng default.png
+                            $logoUrl =
+                                $logoFile && file_exists($logoPath)
+                                    ? asset('images/airlines/' . $logoFile)
+                                    : asset('images/default.jpg');
+                        @endphp
+
+                        <img src="{{ $logoUrl }}" alt="{{ $ticket->flight->airline->AirlineName ?? 'logo' }}"
+                            class="mb-2 checkout-ticket-logo">
+
+                        <p><strong>Hãng:</strong> {{ $ticket->flight->airline->AirlineName ?? '' }}</p>
+                        <p><strong>Chặng:</strong>
+                            {{ $ticket->flight->departureAirport->AirportName ?? $ticket->flight->DepartureAirport }} →
+                            {{ $ticket->flight->arrivalAirport->AirportName ?? $ticket->flight->ArrivalAirport }}
+                        </p>
+                        <p><strong>Ngày bay:</strong> {{ date('d/m/Y', strtotime($ticket->flight->DepartureTime)) }}</p>
+                        <p><strong>Giờ:</strong> {{ date('H:i', strtotime($ticket->flight->DepartureTime)) }} -
+                            {{ date('H:i', strtotime($ticket->flight->ArrivalTime)) }}</p>
+                        <p><strong>Hạng vé:</strong> {{ $ticket->fare->cabinClass->ClassName ?? '' }}</p>
+                        <p><strong>Ghế:</strong> {{ $ticket->seat->SeatNumber ?? '' }}</p>
+                        <hr>
+                    @endforeach
+
                     <p class="fw-bold text-success"><strong>Tổng tiền:</strong>
-                        {{ number_format($ticket->TotalAmount, 0, ',', '.') }} VND
+                        {{ number_format($totalAmount, 0, ',', '.') }} VND
                     </p>
 
-                    <form action="{{ route('cart.checkout', $ticket->TicketID) }}" method="POST"
-                        class="checkout-form mt-3">
+                    <form
+                        action="{{ $isMultiple ? route('cart.checkoutAll') : route('cart.checkout', $tickets->first()->TicketID) }}"
+                        method="POST" class="checkout-form mt-3">
                         @csrf
+
+                        @if ($isMultiple)
+                            <input type="hidden" name="ticket_ids" value="{{ $ticketIds }}">
+                        @endif
+
                         <div class="mb-3">
                             <label for="payment_method" class="form-label fw-bold">Phương thức thanh toán</label>
                             <select name="payment_method" id="payment_method" class="form-select" required>
                                 <option value="">-- Chọn --</option>
                                 @foreach ($paymentMethods as $method)
-                                    <option value="{{ $method->PaymentMethodID }}"
-                                        {{ $ticket->PaymentMethodID == $method->PaymentMethodID ? 'selected' : '' }}>
+                                    <option value="{{ $method->PaymentMethodID }}">
                                         {{ $method->PaymentType }} ({{ $method->Provider }})
                                     </option>
                                 @endforeach
                             </select>
                         </div>
-                        <button type="submit" class="checkout-btn mt-2">Thanh toán</button>
+
+                        <button type="submit" class="checkout-btn mt-2">
+                            Thanh toán {{ $isMultiple ? 'tất cả vé' : 'vé này' }}
+                        </button>
                     </form>
                 </div>
             </div>

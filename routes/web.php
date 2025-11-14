@@ -74,13 +74,16 @@ Route::get('/detail/{id}', [HomeController::class, 'show'])->name('flights.detai
 //Cart
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/store', [CartController::class, 'store'])->name('cart.store');
-Route::get('/cart/checkout/{ticket}', [CartController::class, 'checkoutForm'])->name('cart.checkoutForm');
-Route::post('/cart/checkout/{ticket}', [CartController::class, 'checkout'])->name('cart.checkout');
 Route::delete('/cart/remove/{ticket}', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/cart/store-and-checkout', [CartController::class, 'storeAndCheckout'])->name('cart.storeAndCheckout');
 Route::post('/cart/cancel/{ticket}', [CartController::class, 'cancel'])->name('cart.cancel');
 Route::get('/cart/edit/{ticket}', [CartController::class, 'edit'])->name('cart.edit');
 
+// Checkout
+Route::get('/cart/checkout/{ticket}', [CartController::class, 'checkoutForm'])->name('cart.checkoutForm');
+Route::post('/cart/checkout/{ticket}', [CartController::class, 'checkout'])->name('cart.checkout');
+Route::post('/cart/checkout-all', [CartController::class, 'checkoutAll'])->name('cart.checkoutAll');
+Route::get('/cart/checkout-all', [CartController::class, 'checkoutAllForm'])->name('cart.checkoutAllForm');
 
 //Tìm kiếm chuyến bay trang home
 Route::get('/search', [HomeController::class, 'search'])->name('flights.search');
