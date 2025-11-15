@@ -92,32 +92,64 @@
     padding: 14px 10px;
 }
 
-/* ================== Form chọn hạng vé ================== */
-.detail-fare-form .detail-label {
-    font-weight: 600;
-    color: #212529;
-    margin-bottom: 6px;
+/* ================== Payment Method ================== */
+.detail-payment-box {
+    margin-top: 25px;
 }
 
-.detail-fare-form .detail-select {
-    border-radius: 1rem;
+.detail-payment-label {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #1a73e8;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.detail-payment-select {
+    border-radius: 14px;
     padding: 12px 16px;
+    width: 100%;
     border: 1px solid #ced4da;
     font-size: 1rem;
     transition: all 0.3s ease;
+    background: #fff;
 }
 
-.detail-fare-form .detail-select:focus {
+.detail-payment-select:focus {
     border-color: #1a73e8;
-    box-shadow: 0 0 12px rgba(26,115,232,0.25);
+    box-shadow: 0 0 10px rgba(26, 115, 232, 0.25);
     outline: none;
 }
 
+.detail-payment-select:hover {
+    border-color: #1558b0; /* màu xanh đậm hơn khi hover */
+    box-shadow: 0 0 12px rgba(26, 115, 232, 0.35);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.detail-payment-label:hover {
+    color: #1558b0; /* đổi màu label khi hover */
+    transition: color 0.3s ease;
+}
+
 /* ================== Button ================== */
+.detail-btn-container {
+    display: flex;
+    gap: 16px;         
+    flex-wrap: wrap;   
+}
+
+/* .detail-btn-container form {
+    flex: 1 1 0;       
+} */
+
 .detail-btn {
-    background: linear-gradient(135deg, #007bff, #0056d2);
+    background: linear-gradient(135deg, #3992f1, #035ad3);
     border: none;
     color: white;
+    width: 200px;
+    padding: 14px 0;
     height: 48px;
     border-radius: 16px;
     font-size: 1rem;
@@ -127,9 +159,9 @@
 }
 
 .detail-btn:hover {
-    background: linear-gradient(135deg, #0056d2, #003c99);
+    background: linear-gradient(135deg, #065dd7, #033e98);
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(0, 91, 187, 0.45);
+    box-shadow: 0 10px 30px rgba(2, 50, 101, 0.45);
     color: black;
 }
 
@@ -144,4 +176,73 @@
     .detail-fare-form .detail-select { font-size: 0.9rem; }
     .detail-btn { width: 100%; padding: 14px; }
 }
+
+/* ================== Sơ đồ ghế ================== */
+.seat-map-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.seat-row {
+    display: flex;
+    gap:8px;
+}
+
+.seat-spacer {
+    width: 63px;
+    height: 48px; 
+}
+
+.seat-row-gap {
+    height: 30px; /* khoảng cách ngang giữa các khoang/hàng */
+}
+
+.aisle {
+    width: 30px;   /* chiều rộng lối đi */
+    flex-shrink: 0;
+}
+
+.seat-btn {
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+/* Màu khoang */
+.seat-btn.economy { background-color: #28a745; }   /* phổ thông: xanh lá */
+.seat-btn.business { background-color: #007bff; }  /* thương gia: xanh dương */
+.seat-btn.first { background-color: #dc3545; }     /* hạng nhất: đỏ */
+
+/* Ghế đã đặt */
+.seat-btn.booked {
+    background-color: #6c757d !important;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.seat-btn.sold {
+    background-color: #6c757d !important;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Ghế được chọn */
+.seat-btn.selected {
+    background-color: #ffc107 !important;
+    color: black;
+    transform: scale(1.1);
+}
+
+.seat-btn:hover:not(.booked):not(.selected) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+
 

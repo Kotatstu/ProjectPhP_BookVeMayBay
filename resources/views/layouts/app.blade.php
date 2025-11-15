@@ -62,7 +62,7 @@
                     <form id="logout-form" action="/logout" method="POST" class="d-none">
                         @csrf
                     </form>
-                    @endauth
+                @endauth
             </div>
         </div>
     </nav>
@@ -70,40 +70,37 @@
     <!-- Toast container -->
     <div class="toast-container position-fixed top-0 end-0 p-3">
         @if (session('success'))
-            <div class="toast toast-success align-items-center border-0 show" role="alert" aria-live="assertive"
+            <div class="toast toast-success align-items-center border-0" role="alert" aria-live="assertive"
                 aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
                         {{ session('success') }}
                     </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" aria-label="Close"></button>
                 </div>
             </div>
         @endif
 
         @if (session('error'))
-            <div class="toast toast-error align-items-center border-0 show" role="alert" aria-live="assertive"
+            <div class="toast toast-error align-items-center border-0" role="alert" aria-live="assertive"
                 aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
                         {{ session('error') }}
                     </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" aria-label="Close"></button>
                 </div>
             </div>
         @endif
 
         @if (session('info'))
-            <div class="toast toast-info align-items-center border-0 show" role="alert" aria-live="assertive"
+            <div class="toast toast-info align-items-center border-0" role="alert" aria-live="assertive"
                 aria-atomic="true">
                 <div class="d-flex">
                     <div class="toast-body">
                         {{ session('info') }}
                     </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" aria-label="Close"></button>
                 </div>
             </div>
         @endif
@@ -112,40 +109,40 @@
     <div class="container mt-5 pt-5">
         @yield('content')
     </div>
-<footer class="bg-dark text-light pt-5 pb-4 mt-5">
-    <div class="container-fluid px-5">
-        <div class="row gy-4">
-            <div class="col-md-4">
-                <h5 class="text-uppercase fw-bold mb-3">Vé Máy Bay 24/7</h5>
-                <p>Trang web đặt vé máy bay trực tuyến nhanh chóng, tiện lợi và giá rẻ. Hỗ trợ khách hàng 24/7.</p>
-            </div>
+    <footer class="bg-dark text-light pt-5 pb-4 mt-5">
+        <div class="container-fluid px-5">
+            <div class="row gy-4">
+                <div class="col-md-4">
+                    <h5 class="text-uppercase fw-bold mb-3">Vé Máy Bay 24/7</h5>
+                    <p>Trang web đặt vé máy bay trực tuyến nhanh chóng, tiện lợi và giá rẻ. Hỗ trợ khách hàng 24/7.</p>
+                </div>
 
-            <div class="col-md-4">
-                <h6 class="fw-bold mb-3">Liên hệ</h6>
-                <ul class="list-unstyled">
-                    <li><i class="bi bi-geo-alt"></i> 140 Lê Trọng Tấn, TP. Hồ Chí Minh</li>
-                    <li><i class="bi bi-telephone"></i> +84 123 456 789</li>
-                    <li><i class="bi bi-envelope"></i> support@vemaybay247.vn</li>
-                </ul>
-            </div>
+                <div class="col-md-4">
+                    <h6 class="fw-bold mb-3">Liên hệ</h6>
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-geo-alt"></i> 140 Lê Trọng Tấn, TP. Hồ Chí Minh</li>
+                        <li><i class="bi bi-telephone"></i> +84 123 456 789</li>
+                        <li><i class="bi bi-envelope"></i> support@vemaybay247.vn</li>
+                    </ul>
+                </div>
 
-            <div class="col-md-4">
-                <h6 class="fw-bold mb-3">Theo dõi chúng tôi</h6>
-                <div>
-                    <a href="#" class="text-light me-3"><i class="bi bi-facebook fs-4"></i></a>
-                    <a href="#" class="text-light me-3"><i class="bi bi-instagram fs-4"></i></a>
-                    <a href="#" class="text-light"><i class="bi bi-twitter fs-4"></i></a>
+                <div class="col-md-4">
+                    <h6 class="fw-bold mb-3">Theo dõi chúng tôi</h6>
+                    <div>
+                        <a href="#" class="text-light me-3"><i class="bi bi-facebook fs-4"></i></a>
+                        <a href="#" class="text-light me-3"><i class="bi bi-instagram fs-4"></i></a>
+                        <a href="#" class="text-light"><i class="bi bi-twitter fs-4"></i></a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <hr class="border-secondary my-4">
+            <hr class="border-secondary my-4">
 
-        <div class="text-center small">
-            © {{ date('Y') }} Vé Máy Bay 24/7. All rights reserved.
+            <div class="text-center small">
+                © {{ date('Y') }} Vé Máy Bay 24/7. All rights reserved.
+            </div>
         </div>
-    </div>
-</footer>
+    </footer>
 
     <script>
         lucide.createIcons();
@@ -169,26 +166,29 @@
         });
     </script>
 
+    <!--Script để hiển thị và tự ẩn các toast thông báo -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const toasts = document.querySelectorAll(".toast");
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.toast').forEach(toast => {
+                // cho browser nhận trạng thái ban đầu
+                setTimeout(() => toast.classList.add('show'), 50);
 
-            toasts.forEach(toast => {
-                // Hiệu ứng xuất hiện
-                setTimeout(() => toast.classList.add("show"), 100);
-
-                // Tự ẩn sau 5 giây
+                // tự động ẩn sau 3s
                 setTimeout(() => {
-                    toast.classList.remove("show");
-                    toast.classList.add("hide");
+                    toast.classList.remove('show');
+                    toast.classList.add('hide');
+                }, 3000);
 
-                    // Xoá khỏi DOM sau khi animation kết thúc
-                    setTimeout(() => toast.remove(), 500);
-                }, 5000);
+                // Ẩn khi click nút đóng
+                toast.querySelector('.btn-close')?.addEventListener('click', () => {
+                    toast.classList.remove('show');
+                    toast.classList.add('hide');
+                });
             });
         });
     </script>
 
     @stack('scripts')
 </body>
+
 </html>

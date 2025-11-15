@@ -88,6 +88,46 @@
     margin: 2px;
 }
 
+.cart-checkout-btn {
+    background: linear-gradient(135deg, #3992f1, #035ad3);
+    border: none;
+    color: white;
+    width: 200px;
+    padding: 14px 0;
+    height: 48px;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.35);
+    cursor: pointer;
+}
+
+.cart-checkout-btn:hover {
+    background: linear-gradient(135deg, #065dd7, #033e98);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(2, 50, 101, 0.45);
+    color: black;
+}
+
+/* Nếu muốn phân loại màu theo số lượng vé hoặc trạng thái */
+.cart-checkout-btn-single {
+    background: linear-gradient(135deg, #1a73e8, #1558b0); /* 1 vé */
+}
+
+.cart-checkout-btn-multiple {
+    background: linear-gradient(135deg, #28a745, #198754); /* nhiều vé */
+}
+
+.cart-btn-wrapper {
+    margin-top: 20px;       
+    display: flex;         
+    justify-content: flex-end; 
+    gap: 12px;              
+    flex-wrap: wrap;        
+}
+
+
 /* ================== Heading ================== */
 .cart-container h3,
 .cart-container h5 {
