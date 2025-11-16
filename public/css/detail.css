@@ -1,8 +1,10 @@
 /* ================== Container & Card ================== */
 .detail-container {
-    background: linear-gradient(135deg, #f0f4ff, #e2ebfa);
+    /* background: linear-gradient(135deg, #f0f4ff, #e2ebfa); */
+    background: transparent; /* nền trong suốt, để footer nhìn liền mạch */
     padding: 60px 20px;
-    min-height: 100vh;
+        /* min-height: 100vh;  <-- bỏ hoặc thay bằng min-height: auto */
+    flex: 1; /* để container mở rộng trong flex layout */
 }
 
 .detail-card {
