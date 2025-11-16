@@ -213,3 +213,6 @@ Route::middleware(['auth'])->group(function () {
 // Route ngoài admin
 Route::get('/team-members', [AdminController::class, 'listMembers'])->name('members');
 
+//Route map
+Route::get('/routes/{id}', [HomeController::class, 'showRoute'])->name('route.show');
+
